@@ -1,3 +1,5 @@
+import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 public class ComplexNumberTest {
@@ -81,5 +83,21 @@ public class ComplexNumberTest {
     public void getArgument() {
         ComplexNumber test = new ComplexNumber(4, 3);
         assertEquals(36.87, test.getArgument(), 0.001);
+    }
+
+    @Test
+    public void conjugate() {
+        //Test positive
+        ComplexNumber test = new ComplexNumber(20, 30);
+        assertEquals(-30, test.conjugate().getzImaginary(), 0);
+
+        //Test negative
+        test = new ComplexNumber(-20, -25);
+        assertEquals(25.0, test.conjugate().getzImaginary(), 0);
+        assertEquals(-20, test.conjugate().getzReal(), 0);
+
+        //test zero
+        test = new ComplexNumber(0, 0);
+        assertEquals(0.0, test.conjugate().getzImaginary(), 0);
     }
 }

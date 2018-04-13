@@ -54,11 +54,13 @@ public class ComplexNumber {
         return new ComplexNumber(this.getzReal() / scalar, this.getzImaginary() / scalar);
     }
 
+    public ComplexNumber conjugate(){
+        return new ComplexNumber(this.getzReal(), this.getzImaginary() * -1);
+    }
+
     private void updateModulus() {
         this.setModulus(Math.sqrt(Math.pow(this.getzReal(), 2) + Math.pow(this.getzImaginary(), 2)));
     }
-
-    //CONSTRUCTORS
 
     private void updateArgument() {
         double argument = Math.toDegrees(Math.atan(this.getzImaginary() / this.getzReal()));

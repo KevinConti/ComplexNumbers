@@ -2,12 +2,31 @@ import java.lang.Math;
 public class Main {
 
     public static void main(String[] args) {
+//        testFFT();
+//        testTwoDFFT();
+    }
+
+    public static void testFFT(){
         ComplexNumber[] testInputs = generateTestFFTData();
         ComplexNumber[] results = fastFourierTransform(testInputs, 1);
         System.out.println("\nThe fft of the data\n");
         for(int i = 0; i < results.length; i++){
             System.out.format("%f + %fi\n", results[i].getzReal(), results[i].getzImaginary());
         }
+
+        ComplexNumber[] inverseResults = fastFourierTransform(results, -1);
+        System.out.println("\nThe inverse of the data\n");
+        for(int i = 0; i < results.length; i++){
+            System.out.format("%f + %fi\n", inverseResults[i].getzReal(), inverseResults[i].getzImaginary());
+        }
+    }
+
+    public static void testTwoDFFT(){
+        System.out.println("Testing 2D FFT...");
+        ComplexNumber[][] data = generateTest2DData();
+        ComplexNumber[][] results = twoDFFT(data);
+        System.out.println("\nReals\n");
+        printTwoDArray(results);
     }
 
     //Method that applies a Fast Fourier Transform to an Nx1 vector of complex numbers
@@ -18,11 +37,6 @@ public class Main {
         ComplexNumber t;
         ComplexNumber[] inputs = new ComplexNumber[testInputs.length];
         System.arraycopy(testInputs, 0, inputs, 0, testInputs.length);
-
-        System.out.format("The data as complex\n");
-        for(int i = 0; i < inputs.length; i++){
-            System.out.format("%.2f + %.2fi\n", inputs[i].getzReal(), inputs[i].getzImaginary());
-        }
 
         //1) Set theta = (-2*pi*d)/N and r = N/2
         double N = inputs.length;
@@ -45,7 +59,6 @@ public class Main {
                     inputs[k+m] = inputs[k+m].add(inputs[k+m+r]);
                     inputs[k+m+r] = t.multiply(u);
                     u = w.multiply(u);
-                    System.out.printf("\ni=%d; k=%d; m=%d; r=%d", i,k,m,r);
                 }
                 //b-3: set k = k+2r
                 k = k + 2*r -1; //-1 due to loop incrementation
@@ -54,12 +67,6 @@ public class Main {
             i = 2*i-1; //-1 due to loop incrementation
             r = r/2;
         }
-
-        System.out.printf("\nResults from the first loops\n");
-        for(int x = 0; x < inputs.length; x++){
-            System.out.format("%f + %fi\n", inputs[x].getzReal(), inputs[x].getzImaginary());
-        }
-        System.out.format("Rearranging the results\n");
         //3) For i = 0 to N-1 do:
         for(int i=0; i < N; i++){
             //3a: Set r=i and k = 0
@@ -68,7 +75,6 @@ public class Main {
             //3b: For m = 1 to N-1 do:
             int m = 1;
             while(m < N){
-                System.out.printf("\ni=%d; k=%d; m=%d; r=%d", i,k,m,r);
                 k = 2 * k + (r % 2);
                 r = r / 2;
                 m = 2 * m;
@@ -89,12 +95,89 @@ public class Main {
         return inputs;
     }
 
+    public static ComplexNumber[][] twoDFFT(ComplexNumber[][] userInputs){
+        //Copy array
+        ComplexNumber[][] inputs = new ComplexNumber[userInputs.length][userInputs[0].length];
+        for(int i = 0; i < inputs.length; i++) {
+            System.arraycopy(userInputs[i], 0, inputs[i], 0, inputs[i].length);
+        }
+
+        final int STANDARD_FFT = 1;
+        ComplexNumber[][] temp = new ComplexNumber[inputs.length][inputs[0].length];
+        ComplexNumber finalResult[][] = new ComplexNumber[inputs.length][inputs[0].length];
+        for(int k = 0; k < inputs.length; k++){
+            //Do rows
+            ComplexNumber[] row = new ComplexNumber[inputs[k].length];
+            System.arraycopy(inputs[k],0,row,0,row.length);
+            ComplexNumber[] rowResult = fastFourierTransform(row, STANDARD_FFT);
+            temp[k] = rowResult;
+        }
+
+        System.out.println("First pass:");
+        printTwoDArray(temp);
+        //Do Columns
+        for(int n = 0; n < inputs[0].length; n++){
+            ComplexNumber[] column = new ComplexNumber[inputs.length];
+            for(int i = 0; i < column.length; i++){
+                //add values to form the column
+                column[i] = temp[i][n];
+            }
+            System.out.format("\nColumn: ");
+            for(int x = 0; x < column.length; x++) {
+                System.out.format("%.2f ", column[x].getzReal());
+            }
+            ComplexNumber[] columnResult = fastFourierTransform(column, STANDARD_FFT);
+            System.out.format("\nColumnFFT: ");
+            for(int x = 0; x < columnResult.length; x++) {
+                System.out.format("%.2f ", columnResult[x].getzReal());
+            }
+            //Store as column in final result
+            for(int i = 0; i < column.length; i++){
+                //add values to form the column
+                finalResult[i][n] = columnResult[i];
+            }
+        }
+        return finalResult;
+    }
+
+    private static void printTwoDArray(ComplexNumber[][] array) {
+        for(int i = 0; i < array.length; i++){
+            for(int j = 0; j < array[0].length; j++){
+                System.out.format("%.2f ", array[i][j].getzReal());
+                if(j % 7 == 0 && j != 0){
+                    System.out.format("\n");
+                }
+            }
+        }
+    }
+
     private static ComplexNumber[] generateTestFFTData(){
         double[] reals = {26160.0, 19011.0, 18757, 18405, 17888, 14720, 14285,
         17018, 18014, 17119, 16400, 17497, 17846, 15700, 17636, 17181};
         ComplexNumber[] data = new ComplexNumber[reals.length];
         for(int i = 0; i < reals.length; i++){
             data[i] = new ComplexNumber(reals[i], 0);
+        }
+        return data;
+    }
+
+    private static ComplexNumber[][] generateTest2DData() {
+        double[][] reals = new double[][]{
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 70, 80, 90, 0, 0, 0},
+                {0, 0, 90, 100, 110, 0, 0, 0},
+                {0, 0, 110, 120, 130, 0, 0, 0},
+                {0, 0, 130, 140, 150, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0}
+        };
+        ComplexNumber[][] data = new ComplexNumber[reals.length][reals[0].length];
+        for (int i = 0; i < reals.length; i++) {
+            for(int j = 0; j < reals[0].length; j++){
+                ComplexNumber entry = new ComplexNumber(reals[i][j], 0);
+                data[i][j] = entry;
+            }
         }
         return data;
     }
