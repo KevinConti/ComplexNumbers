@@ -50,6 +50,10 @@ public class ComplexNumber {
         return new ComplexNumber(real, imaginary);
     }
 
+    public ComplexNumber divide(double scalar){
+        return new ComplexNumber(this.getzReal() / scalar, this.getzImaginary() / scalar);
+    }
+
     private void updateModulus() {
         this.setModulus(Math.sqrt(Math.pow(this.getzReal(), 2) + Math.pow(this.getzImaginary(), 2)));
     }
@@ -98,5 +102,15 @@ public class ComplexNumber {
 
     public void setArgument(double argument) {
         this.argument = argument;
+    }
+
+    @Override
+    public String toString() {
+        return "ComplexNumber{" +
+                "zReal=" + zReal +
+                ", zImaginary=" + zImaginary + "i" +
+                ", modulus=" + modulus +
+                ", argument=" + argument +
+                '}';
     }
 }
