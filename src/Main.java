@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.lang.Math;
 public class Main {
 
@@ -5,6 +9,7 @@ public class Main {
 //        testFFT();
 //        testTwoDFFT();
 //        testSignalsDataGenerator();
+        doCommonSignalsProblem(); //Problem 1, output in data directory
     }
 
     public static void testFFT(){
@@ -38,6 +43,140 @@ public class Main {
         testGenerator.writeResult("Hello world 2!");
         testGenerator.closeFile();
 
+    }
+
+    public static void doCommonSignalsProblem(){
+        //Commented out to prevent constant rewriting of the same values to output files, uncomment for functionality
+        doFS();
+        doGS();
+        doPSDEstimates(); //Does the PSD Estimates for f50 and g50, as per question 1b
+    }
+
+    public static void doFS(){
+        runFS(3, "data/fs3.txt");
+        runFS(10, "data/fs10.txt");
+        runFS(50, "data/fs50.txt");
+    }
+
+    public static void runFS(int sTerm, String filename){
+        SignalsDataGenerator writer = new SignalsDataGenerator(filename);
+        writer.clearFile();
+        //Interval for t(time) to increase by
+        final double INTERVAL = 1.0/512.0;
+        final int ITERATIONS = 512;
+
+        for(int i = 1; i <= ITERATIONS; i++){
+            double t = i * INTERVAL;
+            double result = 0;
+            for(int k = 1; k <= sTerm; k++){
+                result += (Math.sin(2.0 * Math.PI * (2*k - 1) * t))/(2*k-1);
+            }
+            String toWrite = Double.toString(result);
+            writer.writeResult(toWrite);
+        }
+
+        writer.closeFile();
+    }
+
+    public static void doGS(){
+        runGS(3, "data/gs3.txt");
+        runGS(10, "data/gs10.txt");
+        runGS(50, "data/gs50.txt");
+    }
+
+    public static void runGS(int sTerm, String filename){
+        SignalsDataGenerator writer = new SignalsDataGenerator(filename);
+        writer.clearFile();
+        //Interval for t(time) to increase by
+        final double INTERVAL = 1.0/512.0;
+        final int ITERATIONS = 512;
+
+        for(int i = 1; i <= ITERATIONS; i++){
+            double t = i * INTERVAL;
+            double result = 0;
+            for(int k = 1; k <= sTerm; k++){
+                result += (Math.sin(2.0 * Math.PI * (2*k) * t))/(2*k);
+            }
+            String toWrite = Double.toString(result);
+            writer.writeResult(toWrite);
+        }
+
+        writer.closeFile();
+    }
+    //Question 1B: Displays only the positive frequencies
+    private static void doPSDEstimates(){
+        final String FSPSD_FILENAME = "data/fs50PSD.txt";
+        final String GSPSD_FILENAME = "data/gs50PSD.txt";
+
+        final String FS50_FILENAME = "data/fs50.txt";
+        final String GS50_FILENAME = "data/gs50.txt";
+
+        doPSD(FS50_FILENAME, FSPSD_FILENAME);
+        doPSD(GS50_FILENAME, GSPSD_FILENAME);
+    }
+
+    private static void doPSD(String inputDataFilename, String outputDataFilename){
+        ComplexNumber[] inputNumbers = parseInputs(inputDataFilename);
+        ComplexNumber[] fftResults = fastFourierTransform(inputNumbers, 1);
+        double[] psdResults = convertFFTToPSD(fftResults);
+        outputPSDResults(psdResults, outputDataFilename);
+    }
+
+    //Assumes a file where each line is a single number, to be converted into a complex number.
+    //Assumes inputs are real numbers (non-complex or imaginary)
+    private static ComplexNumber[] parseInputs(String filename){
+        //TODO: Magic number (512)
+        ComplexNumber[] numbers = new ComplexNumber[512];
+        int count = 0;
+        try {
+            File file = new File(filename);
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
+            String line;
+            while((line = br.readLine()) != null){
+                if(!line.isEmpty()) {
+                    double value = Double.parseDouble(line);
+                    ComplexNumber number = new ComplexNumber(value, 0);
+                    numbers[count] = number;
+                    count++;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(count != numbers.length) {
+            System.out.println("Warning: parseInputs() did not parse the expected amount of numbers. Parsed a total of " + Integer.toString(count) + " numbers");
+        }
+        return numbers;
+    }
+
+    private static double[] convertFFTToPSD(ComplexNumber[] fftValues){
+        //To convert FFT to PSD, you take the modulus and square it
+        double[] results = new double[fftValues.length];
+        for(int i = 0; i < results.length; i++){
+            double answer = Math.pow(fftValues[i].getModulus(), 2);
+            results[i] = answer;
+        }
+        return results;
+    }
+
+    //Only outputs the positive (first half) of PSD results, due to symmetrical nature
+    private static void outputPSDResults(double[] values, String filename){
+        SignalsDataGenerator writer = new SignalsDataGenerator(filename);
+        writer.clearFile();
+        for(int i = 0; i < values.length / 2; i++){
+            if(values[i] >= 0){
+                String toWrite;
+                if(values[i] < .0001 && values[i] > -0.0001) {
+                    toWrite = "0";
+                } else{
+                    double value = values[i];
+                    toWrite = Double.toString(values[i]);
+                }
+                writer.writeResult(toWrite);
+            }
+        }
+        writer.closeFile();
     }
 
     //Method that applies a Fast Fourier Transform to an Nx1 vector of complex numbers

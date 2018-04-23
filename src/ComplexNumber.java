@@ -111,8 +111,8 @@ public class ComplexNumber {
         return "ComplexNumber{" +
                 "zReal=" + zReal +
                 ", zImaginary=" + zImaginary + "i" +
-                ", modulus=" + modulus +
-                ", argument=" + argument +
+                ", modulus=" + getModulus() +
+                ", argument=" + getArgument() +
                 '}';
     }
 }
