@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.Math;
 public class Main {
@@ -11,6 +12,8 @@ public class Main {
 //        doCommonSignalsProblem(); //Problem 1, output in data directory
 //        doQuestionTwo(); //Question 2: Sums of signals vs products of signals
 //        doQuestionThree(); //Question 3: Affect of phase on PSD
+
+        doQuestionFour(); //Question 4: Filtering
     }
 
     public static void testFFT(){
@@ -474,6 +477,100 @@ public class Main {
             writer.writeResult(real);
         }
         writer.closeFile();
+    }
+
+    private static void doQuestionFour(){
+        double[] fs50 = parseFS50();
+        double[] lowPassFS = lowPassFilter(fs50, 7);
+        double[] highPassFS = highPassFilter(fs50, 43);
+        double[] bandPassFS = bandPassFilter(fs50, 4, 7); //inclusive
+        double[] notchFS = notchFilter(fs50, 4, 7); //inclusive, SUPPRESSED
+
+        System.out.println("Values:");
+        System.out.println("fs50      lowPass      highPass      bandPass      notch      ");
+        for(int i = 0; i < fs50.length; i++){
+            System.out.format("%6.1f  %10.1f  %10.1f  %10.1f  %10.1f\n",fs50[i], lowPassFS[i], highPassFS[i], bandPassFS[i], notchFS[i]);
+        }
+    }
+
+    //Takes the data in fs50PSD.txt and converts it into a double[]
+    private static double[] parseFS50() {
+        final String FS50_PSD_FILENAME = "data/fs50PSD.txt";
+        double[] results = new double[256];
+        try {
+            File file = new File(FS50_PSD_FILENAME);
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            for (int i = 0; i < results.length; i++) {
+                if ((line = br.readLine()) != null && !line.isEmpty()){
+                    results[i] = Double.parseDouble(line);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return results;
+    }
+
+    //Puts a low-pass filter on a PSD
+    //inclusiveEndIndex - an index saying what is the last non-zero value to PASS
+    private static double[] lowPassFilter(double[] originalInput, int numValuesToPass){
+        //Convert into appropriate indexes for filter() method
+        int startingIndex = numValuesToPass;
+        int endingIndex = 49;
+
+        return filter(originalInput, startingIndex, endingIndex);
+    }
+
+    private static double[] highPassFilter(double[] originalInput, int numValuesToPass){
+        int startingIndex = 0;
+        int endingIndex = 49 - numValuesToPass;
+
+        return filter(originalInput, startingIndex, endingIndex);
+    }
+
+    private static double[] bandPassFilter(double[] originalInput, int startingIndexToPass, int endingIndexToPassInclusive){
+        //Band pass must be done in two filter passes, due to limitations in current filter method
+        int startingIndex = 0;
+        int endingIndex = startingIndexToPass - 1;
+
+        //first pass
+        double[] tempResults = filter(originalInput, startingIndex, endingIndex);
+
+        int numRemoved = endingIndex - startingIndex + 1;
+
+        startingIndex = endingIndexToPassInclusive + 1 - numRemoved;
+        endingIndex = 49;
+
+        //second pass
+        return filter(tempResults, startingIndex, endingIndex);
+    }
+
+    private static double[] notchFilter(double[] originalInput, int startingIndexToSuppress, int endIndexToSuppress){
+        return filter(originalInput, startingIndexToSuppress, endIndexToSuppress);
+    }
+
+    //Filters out non-zero values, based on the parameter indexes. These indexes refer to non-zero entries, all zero entries are ignored
+    //For example, the first non-zero entry in the originalInput array will be found at inclusiveStartIndex = 0
+    //THE VALUES BETWEEN THE INDEXES STATE WHAT TO FILTER OUT
+    private static double[] filter(double[] originalInput, int inclusiveStartIndex, int inclusiveEndIndex){
+        int non_zero_index = 0;
+        double[] answers = new double[originalInput.length];
+        for(int i = 0; i < originalInput.length; i++){
+            double currentInput = originalInput[i];
+            if(currentInput != 0) {
+                if (non_zero_index >= inclusiveStartIndex && non_zero_index <= inclusiveEndIndex) {
+                    //Filter out this number
+                    answers[i] = 0.0;
+                } else{
+                    answers[i] = originalInput[i];
+                }
+                non_zero_index++;
+            } else {
+                answers[i] = 0.0;
+            }
+        }
+        return answers;
     }
 
 }
