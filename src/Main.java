@@ -4,6 +4,7 @@ public class Main {
     public static void main(String[] args) {
 //        testFFT();
 //        testTwoDFFT();
+//        testSignalsDataGenerator();
     }
 
     public static void testFFT(){
@@ -27,6 +28,16 @@ public class Main {
         ComplexNumber[][] results = twoDFFT(data);
         System.out.println("\nReals\n");
         printTwoDArray(results);
+    }
+
+    public static void testSignalsDataGenerator(){
+        SignalsDataGenerator testGenerator = new SignalsDataGenerator("data/test_output.txt");
+        testGenerator.writeResult("Hello world!");
+        testGenerator.flushFile();
+        testGenerator.clearFile();
+        testGenerator.writeResult("Hello world 2!");
+        testGenerator.closeFile();
+
     }
 
     //Method that applies a Fast Fourier Transform to an Nx1 vector of complex numbers
