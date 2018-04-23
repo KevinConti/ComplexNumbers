@@ -9,8 +9,8 @@ public class Main {
 //        testTwoDFFT();
 //        testSignalsDataGenerator();
 //        doCommonSignalsProblem(); //Problem 1, output in data directory
-
-        doQuestionTwo(); //Question 2: Sums of signals vs products of signals
+//        doQuestionTwo(); //Question 2: Sums of signals vs products of signals
+//        doQuestionThree(); //Question 3: Affect of phase on PSD
     }
 
     public static void testFFT(){
@@ -401,4 +401,79 @@ public class Main {
         }
         return data;
     }
+
+    private static void doQuestionThree(){
+//        examineTimeVariations(); //Question 3a
+        examineHT(); //Question 3b
+    }
+
+    private static void examineTimeVariations(){
+        ComplexNumber[] start = generateSinglePulse(0, 256);
+        ComplexNumber[] mid = generateSinglePulse(127, 256);
+        ComplexNumber[] random = generateSinglePulse(38, 256);
+
+        doPSD(start, "data/question3/start.txt");
+        doPSD(mid, "data/question3/mid.txt");
+        doPSD(random, "data/question3/random.txt");
+    }
+
+    private static ComplexNumber[] generateSinglePulse(int pulseLocation, int length){
+        ComplexNumber[] results = new ComplexNumber[length];
+        for(int i = 0; i < length; i++){
+            double value = 0.0;
+            if(i == pulseLocation){
+                value = 1.0;
+            }
+            results[i] = new ComplexNumber(value, 0);
+        }
+        return results;
+    }
+
+    private static void examineHT(){
+        ComplexNumber[] ht = generateHT(0, "data/question3/ht_raw.txt"); //h(t) = sin(20 * PI * t)
+        ComplexNumber[] ht_shifted = generateHT(0.43, "data/question3/ht_shifted.txt");
+
+        //Examine the FFTs for Problem 3.b.i
+        ComplexNumber[] ht_fft = fastFourierTransform(ht, 1);
+        ComplexNumber[] ht_shifted_fft = fastFourierTransform(ht_shifted, 1);
+        outputFFTRealsToFile(ht_fft, "data/question3/ht_fft.txt");
+        outputFFTRealsToFile(ht_shifted_fft, "data/question3/ht_shifted_fft.txt");
+
+
+        doPSD(ht, "data/question3/ht_raw_psd.txt");
+        doPSD(ht_shifted, "data/question3/ht_shifted_psd.txt");
+    }
+
+    //Generates h(t)
+    //c - phase shift in function sin(20 * pi * (t-c))
+    private static ComplexNumber[] generateHT(double c, String filename){
+        SignalsDataGenerator writer = new SignalsDataGenerator(filename);
+        ComplexNumber[] results = new ComplexNumber[512];
+        final double INTERVAL = 1.0/512.0;
+        for(int i = 0; i < results.length; i++){
+            double t = i*INTERVAL;
+            ComplexNumber answer = new ComplexNumber(Math.sin(20.0 * Math.PI * (t-c)), 0);
+            results[i] = answer;
+            writer.writeResult(Double.toString(answer.getzReal()));
+        }
+        writer.closeFile();
+        return results;
+    }
+
+    //purpose: This method is used to output a ComplexNumber to a file. For use in problem 3.b.i
+    private static void outputFFTRealsToFile(ComplexNumber[] values, String filename){
+        SignalsDataGenerator writer = new SignalsDataGenerator(filename);
+        writer.clearFile();
+        for(int i = 0; i < values.length; i++){
+            String real;
+            if(values[i].getzReal() > -.0000000001 && values[i].getzReal() < .0000000001) {
+                real = "0";
+            } else{
+                real = Double.toString(values[i].getzReal());
+            }
+            writer.writeResult(real);
+        }
+        writer.closeFile();
+    }
+
 }
