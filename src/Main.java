@@ -198,7 +198,6 @@ public class Main {
     //Assumes a file where each line is a single number, to be converted into a complex number.
     //Assumes inputs are real numbers (non-complex or imaginary)
     private static ComplexNumber[] parseInputs(String filename){
-        //TODO: Magic number (512)
         ComplexNumber[] numbers = new ComplexNumber[512];
         int count = 0;
         try {
@@ -486,11 +485,25 @@ public class Main {
         double[] bandPassFS = bandPassFilter(fs50, 4, 7); //inclusive
         double[] notchFS = notchFilter(fs50, 4, 7); //inclusive, SUPPRESSED
 
+        //Output for debugging purposes
         System.out.println("Values:");
         System.out.println("fs50      lowPass      highPass      bandPass      notch      ");
         for(int i = 0; i < fs50.length; i++){
             System.out.format("%6.1f  %10.1f  %10.1f  %10.1f  %10.1f\n",fs50[i], lowPassFS[i], highPassFS[i], bandPassFS[i], notchFS[i]);
         }
+
+        //Convert signals to original values
+        ComplexNumber[] fs50_time = PSDToTime(fs50);
+        ComplexNumber[] lowPass_time = PSDToTime(lowPassFS);
+        ComplexNumber[] highPass_time = PSDToTime(highPassFS);
+        ComplexNumber[] bandPass_time = PSDToTime(bandPassFS);
+        ComplexNumber[] notchPass_time = PSDToTime(notchFS);
+
+        //Output results to file
+        outputComplexToFile(lowPass_time, "data/question4/lp_filter.txt");
+        outputComplexToFile(highPass_time, "data/question4/hp_filter.txt");
+        outputComplexToFile(bandPass_time, "data/question4/bp_filter.txt");
+        outputComplexToFile(notchPass_time, "data/question4/notch_filter.txt");
     }
 
     //Takes the data in fs50PSD.txt and converts it into a double[]
@@ -573,4 +586,28 @@ public class Main {
         return answers;
     }
 
+    private static ComplexNumber[] PSDToTime(double[] inputs){
+        //Convert values into ComplexNumbers
+        ComplexNumber[] inputsAsComplex = new ComplexNumber[inputs.length];
+        for(int i = 0; i < inputsAsComplex.length; i++){
+            inputsAsComplex[i] = new ComplexNumber(inputs[i], 0);
+        }
+
+        //Inverse FFT
+        ComplexNumber[] inverted = fastFourierTransform(inputsAsComplex, -1);
+        return inverted;
+    }
+
+    private static void outputComplexToFile(ComplexNumber[] values, String filepath){
+        SignalsDataGenerator writer = new SignalsDataGenerator(filepath);
+        writer.clearFile();
+        String toWrite;
+        for(int i = 0; i < values.length; i++){
+            String zReal = Double.toString(values[i].getzReal());
+            String zImg = Double.toString(values[i].getzImaginary());
+            toWrite = zReal + " + " + zImg + "i";
+            writer.writeResult(toWrite);
+        }
+        writer.closeFile();
+    }
 }

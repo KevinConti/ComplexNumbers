@@ -15,8 +15,8 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="541" column="67" selection-start-line="541" selection-start-column="67" selection-end-line="541" selection-end-column="67" />
+            <state relative-caret-position="-7915">
+              <caret line="12" column="10" selection-start-line="12" selection-start-column="10" selection-end-line="12" selection-end-column="10" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -24,13 +24,33 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="fs50PSD.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data/fs50PSD.txt">
+      <file leaf-file-name="lp_filter.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/question4/lp_filter.txt">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file leaf-file-name="fs50.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/fs50.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-8265">
-              <caret line="5" column="17" lean-forward="true" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
+            <state relative-caret-position="360">
+              <caret line="512" lean-forward="true" selection-start-line="512" selection-end-line="512" />
             </state>
           </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="hp_filter.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/question4/hp_filter.txt">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file leaf-file-name="bp_filter.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/question4/bp_filter.txt">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file leaf-file-name="notch_filter.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/question4/notch_filter.txt">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file leaf-file-name="ComplexNumber.java" pinned="false" current-in-tab="false">
@@ -84,6 +104,7 @@
     <findStrings>
       <find>u</find>
       <find>Buffered</find>
+      <find>fs50PSD</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -125,7 +146,7 @@
               <item name="ComplexNumbers" type="b2602c69:ProjectViewProjectNode" />
               <item name="ComplexNumbers" type="462c0819:PsiDirectoryNode" />
               <item name="data" type="462c0819:PsiDirectoryNode" />
-              <item name="question3" type="462c0819:PsiDirectoryNode" />
+              <item name="question4" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ComplexNumbers" type="b2602c69:ProjectViewProjectNode" />
@@ -219,7 +240,7 @@
       <workItem from="1523365249144" duration="4009000" />
       <workItem from="1523543509483" duration="8860000" />
       <workItem from="1524144940544" duration="496000" />
-      <workItem from="1524493799677" duration="21726000" />
+      <workItem from="1524493799677" duration="25061000" />
     </task>
     <servers />
   </component>
@@ -256,7 +277,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="45631000" />
+    <option name="totallyTimeSpent" value="48966000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="790" extended-state="6" />
@@ -268,14 +289,14 @@
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="right" id="Maven Projects" order="3" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3282123" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3282123" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info id="Designer" order="2" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15069444" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.3980447" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.3980447" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -292,7 +313,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="43" />
+      <option name="time" value="46" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -572,13 +593,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data/fs50.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="356">
-          <caret line="512" lean-forward="true" selection-start-line="512" selection-end-line="512" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/data/gs50.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3200">
@@ -670,15 +684,34 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/data/fs50PSD.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8265">
+        <state relative-caret-position="85">
           <caret line="5" column="17" lean-forward="true" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/question4/notch_filter.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/question4/hp_filter.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/question4/lp_filter.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/question4/bp_filter.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/fs50.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="512" lean-forward="true" selection-start-line="512" selection-end-line="512" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="541" column="67" selection-start-line="541" selection-start-column="67" selection-end-line="541" selection-end-column="67" />
+        <state relative-caret-position="-7915">
+          <caret line="12" column="10" selection-start-line="12" selection-start-column="10" selection-end-line="12" selection-end-column="10" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
