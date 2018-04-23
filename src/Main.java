@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.Math;
 public class Main {
@@ -9,7 +8,9 @@ public class Main {
 //        testFFT();
 //        testTwoDFFT();
 //        testSignalsDataGenerator();
-        doCommonSignalsProblem(); //Problem 1, output in data directory
+//        doCommonSignalsProblem(); //Problem 1, output in data directory
+
+        doQuestionTwo(); //Question 2: Sums of signals vs products of signals
     }
 
     public static void testFFT(){
@@ -50,6 +51,56 @@ public class Main {
         doFS();
         doGS();
         doPSDEstimates(); //Does the PSD Estimates for f50 and g50, as per question 1b
+    }
+
+    private static void doQuestionTwo(){
+        //x(t) = v1(t) + v2(t)
+        //y(t) = v1(t) * v2(t)
+
+        //v1(t) = sin(2*pi*13*t)
+        //v2(t) = sin(2*pi*31*t)
+
+        double[] v1 = generateV(13);
+        double[] v2 = generateV(31);
+
+        ComplexNumber[] xt = generateXT(v1, v2);
+        ComplexNumber[] yt = generateYT(v1, v2);
+
+        doPSD(xt, "data/xt_psd.txt");
+        doPSD(yt, "data/yt_psd.txt");
+    }
+
+    //This method generates v in the time domain, where v1[i] = sin(2*pi*f*t), where t=i/512 (the time interval)
+    //f - frequency to be calculated
+    private static double[] generateV(int frequency){
+        final double INTERVAL = 1.0/512.0;
+        double[] results = new double[512];
+        for(int i = 0; i < results.length; i++){
+            double t = i * INTERVAL;
+            double answer = Math.sin(2 * Math.PI * frequency * t);
+            results[i] = answer;
+        }
+        return results;
+    }
+
+    //This method takes two functions and adds them together, returning an array of complex numbers
+    private static ComplexNumber[] generateXT(double[] v1, double[] v2){
+        ComplexNumber[] results = new ComplexNumber[v1.length];
+        for(int i = 0; i < results.length; i++){
+            ComplexNumber answer = new ComplexNumber(v1[i] + v2[i], 0);
+            results[i] = answer;
+        }
+        return results;
+    }
+
+    //This method takes two functions and multiplies them together, returning an array of complex numbers
+    private static ComplexNumber[] generateYT(double[] v1, double[] v2){
+        ComplexNumber[] results = new ComplexNumber[v1.length];
+        for(int i = 0; i < results.length; i++){
+            ComplexNumber answer = new ComplexNumber(v1[i] * v2[i], 0);
+            results[i] = answer;
+        }
+        return results;
     }
 
     public static void doFS(){
@@ -111,13 +162,32 @@ public class Main {
         final String FS50_FILENAME = "data/fs50.txt";
         final String GS50_FILENAME = "data/gs50.txt";
 
+        final String FL_IN_FILENAME = "data/fl_in.txt";
+        final String FL_OUT_FILENAME = "data/fl_out.txt";
+
+        final String GL_IN_FILENAME = "data/gl_in.txt";
+        final String GL_OUT_FILENAME = "data/gl_out.txt";
+
         doPSD(FS50_FILENAME, FSPSD_FILENAME);
         doPSD(GS50_FILENAME, GSPSD_FILENAME);
+
+        doPSD(FL_IN_FILENAME, FL_OUT_FILENAME);
+        //TODO: Get feedback to verify that fl_in and gl_in data are correct
+        //doPSD(GL_IN_FILENAME, GL_OUT_FILENAME);
+
+
     }
 
     private static void doPSD(String inputDataFilename, String outputDataFilename){
         ComplexNumber[] inputNumbers = parseInputs(inputDataFilename);
         ComplexNumber[] fftResults = fastFourierTransform(inputNumbers, 1);
+        double[] psdResults = convertFFTToPSD(fftResults);
+        outputPSDResults(psdResults, outputDataFilename);
+    }
+
+    //Used if we already have the ComplexNumber[] array from some other source
+    private static void doPSD(ComplexNumber[] inputNumbers, String outputDataFilename){
+        ComplexNumber[]fftResults = fastFourierTransform(inputNumbers, 1);
         double[] psdResults = convertFFTToPSD(fftResults);
         outputPSDResults(psdResults, outputDataFilename);
     }
@@ -164,7 +234,7 @@ public class Main {
     private static void outputPSDResults(double[] values, String filename){
         SignalsDataGenerator writer = new SignalsDataGenerator(filename);
         writer.clearFile();
-        for(int i = 0; i < values.length / 2; i++){
+        for(int i = 0; i < values.length; i++){
             if(values[i] >= 0){
                 String toWrite;
                 if(values[i] < .0001 && values[i] > -0.0001) {
