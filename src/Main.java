@@ -12,8 +12,8 @@ public class Main {
 //        doCommonSignalsProblem(); //Problem 1, output in data directory
 //        doQuestionTwo(); //Question 2: Sums of signals vs products of signals
 //        doQuestionThree(); //Question 3: Affect of phase on PSD
-
-        doQuestionFour(); //Question 4: Filtering
+//        doQuestionFour(); //Question 4: Filtering
+        doQuestionFive(); //Question 5: DTMF Tones
     }
 
     public static void testFFT(){
@@ -175,8 +175,7 @@ public class Main {
         doPSD(GS50_FILENAME, GSPSD_FILENAME);
 
         doPSD(FL_IN_FILENAME, FL_OUT_FILENAME);
-        //TODO: Get feedback to verify that fl_in and gl_in data are correct
-        //doPSD(GL_IN_FILENAME, GL_OUT_FILENAME);
+        doPSD(GL_IN_FILENAME, GL_OUT_FILENAME);
 
 
     }

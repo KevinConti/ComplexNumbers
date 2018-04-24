@@ -15,42 +15,11 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="332">
-              <caret line="501" column="42" selection-start-line="501" selection-start-column="42" selection-end-line="501" selection-end-column="42" />
+            <state relative-caret-position="255">
+              <caret line="15" column="50" selection-start-line="15" selection-start-column="50" selection-end-line="15" selection-end-column="50" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="bp_filter.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data/question4/bp_filter.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-64" />
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="hp_filter.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data/question4/hp_filter.txt">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file leaf-file-name="lp_filter.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data/question4/lp_filter.txt">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file leaf-file-name="notch_filter.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data/question4/notch_filter.txt">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file leaf-file-name="fs50.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data/fs50.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8704">
-              <caret line="512" selection-start-line="512" selection-end-line="512" />
             </state>
           </provider>
         </entry>
@@ -117,13 +86,15 @@
         <option value="$PROJECT_DIR$/src/SignalsDataGenerator.java" />
         <option value="$PROJECT_DIR$/src/ComplexNumber.java" />
         <option value="$PROJECT_DIR$/data/fl_in.txt" />
+        <option value="$PROJECT_DIR$/data/question4/bp_filter.txt" />
+        <option value="$PROJECT_DIR$/data/gl_in.txt" />
         <option value="$PROJECT_DIR$/src/Main.java" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="23" />
-    <option name="width" value="1440" />
+    <option name="width" value="720" />
     <option name="height" value="790" />
   </component>
   <component name="ProjectView">
@@ -244,7 +215,7 @@
       <workItem from="1524144940544" duration="496000" />
       <workItem from="1524493799677" duration="27830000" />
       <workItem from="1524577696992" duration="3141000" />
-      <workItem from="1524589856201" duration="1865000" />
+      <workItem from="1524589856201" duration="4242000" />
     </task>
     <servers />
   </component>
@@ -281,10 +252,10 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="56741000" />
+    <option name="totallyTimeSpent" value="59118000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="790" extended-state="0" />
+    <frame x="0" y="23" width="1440" height="790" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -293,11 +264,11 @@
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="right" id="Maven Projects" order="3" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3282123" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3282123" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info id="Designer" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15069444" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15069444" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3980447" />
@@ -762,31 +733,69 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data/fs50.txt">
+    <entry file="file://$PROJECT_DIR$/data/question4/bp_filter.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8704">
-          <caret line="512" selection-start-line="512" selection-end-line="512" />
+        <state relative-caret-position="187">
+          <caret line="11" column="19" lean-forward="true" selection-end-line="512" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data/question4/bp_filter.txt">
+    <entry file="file://$PROJECT_DIR$/data/question4/hp_filter.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-64" />
+        <state relative-caret-position="-8350">
+          <caret selection-end-line="512" />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data/question4/hp_filter.txt">
-      <provider selected="true" editor-type-id="text-editor" />
+    <entry file="file://$PROJECT_DIR$/data/question4/notch_filter.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" column="18" lean-forward="true" selection-start-line="18" selection-start-column="18" selection-end-line="18" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/fs50.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="18" lean-forward="true" selection-start-line="4" selection-start-column="18" selection-end-line="4" selection-end-column="18" />
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/data/question4/lp_filter.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="18" lean-forward="true" selection-start-line="4" selection-start-column="18" selection-end-line="4" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/fl_in.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/data/question4/notch_filter.txt">
-      <provider selected="true" editor-type-id="text-editor" />
+    <entry file="file://$PROJECT_DIR$/data/gl_in.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8687">
+          <caret line="511" column="11" selection-start-line="511" selection-start-column="11" selection-end-line="511" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/fl_out.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-line="512" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/gl_out.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="18" lean-forward="true" selection-start-line="12" selection-start-column="18" selection-end-line="12" selection-end-column="18" />
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="332">
-          <caret line="501" column="42" selection-start-line="501" selection-start-column="42" selection-end-line="501" selection-end-column="42" />
+        <state relative-caret-position="255">
+          <caret line="15" column="50" selection-start-line="15" selection-start-column="50" selection-end-line="15" selection-end-column="50" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
