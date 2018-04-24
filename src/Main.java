@@ -480,38 +480,41 @@ public class Main {
 
     private static void doQuestionFour(){
         double[] fs50 = parseFS50();
-        double[] lowPassFS = lowPassFilter(fs50, 7);
-        double[] highPassFS = highPassFilter(fs50, 43);
-        double[] bandPassFS = bandPassFilter(fs50, 4, 7); //inclusive
-        double[] notchFS = notchFilter(fs50, 4, 7); //inclusive, SUPPRESSED
+        ComplexNumber[] fs50_complex = new ComplexNumber[fs50.length];
+        for(int i = 0; i < fs50_complex.length; i++){
+            fs50_complex[i] = new ComplexNumber(fs50[i], 0);
+        }
+        ComplexNumber[] fs50_fft = fastFourierTransform(fs50_complex, 1);
+        ComplexNumber[] lowPassFS = lowPassFilter(fs50_fft, 7);
+        ComplexNumber[] highPassFS = highPassFilter(fs50_fft, 43);
+        ComplexNumber[] bandPassFS = bandPassFilter(fs50_fft, 4, 7); //inclusive
+        ComplexNumber[] notchFS = notchFilter(fs50_fft, 4, 7); //inclusive, SUPPRESSED
 
-        //Output for debugging purposes
-        System.out.println("Values:");
-        System.out.println("fs50      lowPass      highPass      bandPass      notch      ");
-        for(int i = 0; i < fs50.length; i++){
-            System.out.format("%6.1f  %10.1f  %10.1f  %10.1f  %10.1f\n",fs50[i], lowPassFS[i], highPassFS[i], bandPassFS[i], notchFS[i]);
+        //Convert signals back to time domain
+        double[] fs50_time = convertFilteredSignalToTimeDomain(fs50_fft);
+        double[] lowPass_time = convertFilteredSignalToTimeDomain(lowPassFS);
+        double[] highPass_time = convertFilteredSignalToTimeDomain(highPassFS);
+        double[] bandPass_time = convertFilteredSignalToTimeDomain(bandPassFS);
+        double[] notch_time = convertFilteredSignalToTimeDomain(notchFS);
+
+        System.out.println("fs50 after reconversion:");
+        for(int i = 0; i < fs50.length / 2; i++){
+            System.out.format("%6.10f\n", fs50_time[i]);
         }
 
-        //Convert signals to original values
-        ComplexNumber[] fs50_time = PSDToTime(fs50);
-        ComplexNumber[] lowPass_time = PSDToTime(lowPassFS);
-        ComplexNumber[] highPass_time = PSDToTime(highPassFS);
-        ComplexNumber[] bandPass_time = PSDToTime(bandPassFS);
-        ComplexNumber[] notchPass_time = PSDToTime(notchFS);
-
-        //Output results to file
-        outputComplexToFile(lowPass_time, "data/question4/lp_filter.txt");
-        outputComplexToFile(highPass_time, "data/question4/hp_filter.txt");
-        outputComplexToFile(bandPass_time, "data/question4/bp_filter.txt");
-        outputComplexToFile(notchPass_time, "data/question4/notch_filter.txt");
+        //output to files for graphing in Excel
+        outputQuestion4(lowPass_time, "data/question4/lp_filter.txt");
+        outputQuestion4(highPass_time, "data/question4/hp_filter.txt");
+        outputQuestion4(bandPass_time, "data/question4/bp_filter.txt");
+        outputQuestion4(notch_time, "data/question4/notch_filter.txt");
     }
 
     //Takes the data in fs50PSD.txt and converts it into a double[]
     private static double[] parseFS50() {
-        final String FS50_PSD_FILENAME = "data/fs50PSD.txt";
-        double[] results = new double[256];
+        final String FS50_FILENAME = "data/fs50.txt";
+        double[] results = new double[512];
         try {
-            File file = new File(FS50_PSD_FILENAME);
+            File file = new File(FS50_FILENAME);
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
             for (int i = 0; i < results.length; i++) {
@@ -525,77 +528,141 @@ public class Main {
         return results;
     }
 
-    //Puts a low-pass filter on a PSD
-    //inclusiveEndIndex - an index saying what is the last non-zero value to PASS
-    private static double[] lowPassFilter(double[] originalInput, int numValuesToPass){
-        //Convert into appropriate indexes for filter() method
-        int startingIndex = numValuesToPass;
-        int endingIndex = 49;
+    //Puts a low-pass filter
+    //int numValuesToPass - passes only this many through
+    private static ComplexNumber[] lowPassFilter(ComplexNumber[] originalInput, int numValuesToPass){
+        ComplexNumber[] filter = new ComplexNumber[originalInput.length];
 
-        return filter(originalInput, startingIndex, endingIndex);
-    }
-
-    private static double[] highPassFilter(double[] originalInput, int numValuesToPass){
-        int startingIndex = 0;
-        int endingIndex = 49 - numValuesToPass;
-
-        return filter(originalInput, startingIndex, endingIndex);
-    }
-
-    private static double[] bandPassFilter(double[] originalInput, int startingIndexToPass, int endingIndexToPassInclusive){
-        //Band pass must be done in two filter passes, due to limitations in current filter method
-        int startingIndex = 0;
-        int endingIndex = startingIndexToPass - 1;
-
-        //first pass
-        double[] tempResults = filter(originalInput, startingIndex, endingIndex);
-
-        int numRemoved = endingIndex - startingIndex + 1;
-
-        startingIndex = endingIndexToPassInclusive + 1 - numRemoved;
-        endingIndex = 49;
-
-        //second pass
-        return filter(tempResults, startingIndex, endingIndex);
-    }
-
-    private static double[] notchFilter(double[] originalInput, int startingIndexToSuppress, int endIndexToSuppress){
-        return filter(originalInput, startingIndexToSuppress, endIndexToSuppress);
-    }
-
-    //Filters out non-zero values, based on the parameter indexes. These indexes refer to non-zero entries, all zero entries are ignored
-    //For example, the first non-zero entry in the originalInput array will be found at inclusiveStartIndex = 0
-    //THE VALUES BETWEEN THE INDEXES STATE WHAT TO FILTER OUT
-    private static double[] filter(double[] originalInput, int inclusiveStartIndex, int inclusiveEndIndex){
-        int non_zero_index = 0;
-        double[] answers = new double[originalInput.length];
-        for(int i = 0; i < originalInput.length; i++){
-            double currentInput = originalInput[i];
-            if(currentInput != 0) {
-                if (non_zero_index >= inclusiveStartIndex && non_zero_index <= inclusiveEndIndex) {
-                    //Filter out this number
-                    answers[i] = 0.0;
-                } else{
-                    answers[i] = originalInput[i];
+        //Create the filter
+        for(int i = 0; i < filter.length; i++){
+            double filterValue;
+            ComplexNumber currentValue = originalInput[i];
+            if(!realIsZero(currentValue)){
+                //If the value is non-zero:
+                if(numValuesToPass > 0){
+                    //if we need to pass more frequencies
+                    filterValue = 1.0;
+                    numValuesToPass--;
+                } else {
+                    //We don't need to pass more frequencies
+                    filterValue = 0;
                 }
-                non_zero_index++;
             } else {
-                answers[i] = 0.0;
+                //The value is a zero
+                if(numValuesToPass > 0){
+                    //We are currently applying filters of 1
+                    filterValue = 1;
+                } else{
+                    //We are applying filters of 0
+                    filterValue = 0;
+                }
             }
+            filter[i] = new ComplexNumber(filterValue, 0);
         }
-        return answers;
+
+        ComplexNumber[] results = new ComplexNumber[filter.length];
+        for(int i = 0; i < filter.length; i++){
+            results[i] = originalInput[i].multiply(filter[i]);
+        }
+
+        return results;
     }
 
-    private static ComplexNumber[] PSDToTime(double[] inputs){
-        //Convert values into ComplexNumbers
-        ComplexNumber[] inputsAsComplex = new ComplexNumber[inputs.length];
-        for(int i = 0; i < inputsAsComplex.length; i++){
-            inputsAsComplex[i] = new ComplexNumber(inputs[i], 0);
+    //Passes the upper 'numValuesToPass' number of values
+    private static ComplexNumber[] highPassFilter(ComplexNumber[] originalInput, int numValuesToPass){
+        ComplexNumber[] filter = new ComplexNumber[originalInput.length];
+        for(int i = filter.length - 1; i >= 0; i--){
+            double filterValue;
+            ComplexNumber currentValue = originalInput[i];
+            if(!realIsZero(currentValue)){
+                //If the value is non-zero:
+                if(numValuesToPass > 0){
+                    //if we need to pass more frequencies
+                    filterValue = 1.0;
+                    numValuesToPass--;
+                } else {
+                    //We don't need to pass more frequencies
+                    filterValue = 0;
+                }
+            } else {
+                //The value is a zero
+                if(numValuesToPass > 0){
+                    //We are currently applying filters of 1
+                    filterValue = 1;
+                } else{
+                    //We are applying filters of 0
+                    filterValue = 0;
+                }
+            }
+            filter[i] = new ComplexNumber(filterValue, 0);
+        }
+        ComplexNumber[] results = new ComplexNumber[filter.length];
+        for(int i = 0; i < filter.length; i++){
+            results[i] = originalInput[i].multiply(filter[i]);
         }
 
-        //Inverse FFT
-        ComplexNumber[] inverted = fastFourierTransform(inputsAsComplex, -1);
-        return inverted;
+        return results;
+    }
+
+
+
+    private static ComplexNumber[] bandPassFilter(ComplexNumber[] originalInput, int startingIndexToPass, int endingIndexToPassInclusive){
+        ComplexNumber[] filter = new ComplexNumber[originalInput.length];
+        int non_zero_index = 0;
+        for(int i = 0; i < filter.length; i++){
+            double filterValue;
+            ComplexNumber currentValue = originalInput[i];
+            if(!realIsZero(currentValue)){
+                //Value is non-zero
+                non_zero_index++;
+            }
+            filterValue = inRange(startingIndexToPass, endingIndexToPassInclusive, non_zero_index);
+            filter[i] = new ComplexNumber(filterValue, 0);
+        }
+        ComplexNumber[] results = new ComplexNumber[filter.length];
+        for(int i = 0; i < filter.length; i++){
+            results[i] = originalInput[i].multiply(filter[i]);
+        }
+
+        return results;
+    }
+
+    private static double inRange(int startingIndexToPass, int endingIndexToPassInclusive, int non_zero_index){
+        if(non_zero_index >= startingIndexToPass && non_zero_index <= endingIndexToPassInclusive){
+            //pass this value
+            return 1.0;
+        } else {
+            //zero out this value
+            return 0.0;
+        }
+    }
+
+    private static ComplexNumber[] notchFilter(ComplexNumber[] originalInput, int startingIndexToSuppress, int endIndexToSuppress){
+        ComplexNumber[] filter = new ComplexNumber[originalInput.length];
+        int non_zero_index = 0;
+        for(int i = 0; i < filter.length; i++){
+            double filterValue;
+            ComplexNumber currentValue = originalInput[i];
+            if(!realIsZero(currentValue)){
+                //Value is non-zero
+                non_zero_index++;
+            }
+            filterValue = inRange(startingIndexToSuppress, endIndexToSuppress, non_zero_index);
+
+            //Flips value so we suppress instead of passing
+            if(filterValue == 1.0){
+                filterValue = 0;
+            } else {
+                filterValue = 1.0;
+            }
+            filter[i] = new ComplexNumber(filterValue, 0);
+        }
+        ComplexNumber[] results = new ComplexNumber[filter.length];
+        for(int i = 0; i < filter.length; i++){
+            results[i] = originalInput[i].multiply(filter[i]);
+        }
+
+        return results;
     }
 
     private static void outputComplexToFile(ComplexNumber[] values, String filepath){
@@ -607,6 +674,36 @@ public class Main {
             String zImg = Double.toString(values[i].getzImaginary());
             toWrite = zReal + " + " + zImg + "i";
             writer.writeResult(toWrite);
+        }
+        writer.closeFile();
+    }
+
+    private static boolean realIsZero(ComplexNumber currentValue){
+        if(currentValue.getzReal() > -.000001 && currentValue.getzReal() < .000001){
+            return true;
+        } else return false;
+    }
+
+    //Takes a signal and applies an inverted FFT, and returns the real numbers of that value
+    private static double[] convertFilteredSignalToTimeDomain(ComplexNumber[] inputs){
+        double[] results = new double[inputs.length];
+
+        //Take filtered signal and apply FFT^-1
+        ComplexNumber[] invertedSignal = fastFourierTransform(inputs, -1);
+
+        //Return reals
+        for(int i = 0; i < results.length; i++){
+            results[i] = invertedSignal[i].getzReal();
+        }
+
+        return results;
+    }
+
+    private static void outputQuestion4(double[] output, String filepath){
+        SignalsDataGenerator writer = new SignalsDataGenerator(filepath);
+        writer.clearFile();
+        for(int i = 0; i < output.length; i++){
+            writer.writeResult(Double.toString(output[i]));
         }
         writer.closeFile();
     }
