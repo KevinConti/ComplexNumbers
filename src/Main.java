@@ -3,6 +3,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.Math;
+import java.util.Dictionary;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -705,5 +707,160 @@ public class Main {
             writer.writeResult(Double.toString(output[i]));
         }
         writer.closeFile();
+    }
+
+    private static void doQuestionFive(){
+        double[] a1 = parseToneDataFile("data/question5/toneDataA1.txt");
+        double[] b1 = parseToneDataFile("data/question5/toneDataB1.txt");
+
+        ComplexNumber[] a1_fft = doubleToFFT(a1);
+        ComplexNumber[] b1_fft = doubleToFFT(b1);
+
+        outputComplexToFile(a1_fft, "data/question5/a1_fft.txt");
+        outputComplexToFile(b1_fft, "data/question5/b1_fft.txt");
+
+        double[] a1_psd = convertFFTToPSD(a1_fft);
+        double[] b1_psd = convertFFTToPSD(b1_fft);
+
+        outputPSDResults(a1_psd, "data/question5/a1_psd.txt");
+        outputPSDResults(b1_psd, "data/question5/b1_psd.txt");
+
+        String a1_DTMF = mapCorrespondingFrequencies(a1_psd);
+        String b1_DTMF = mapCorrespondingFrequencies(b1_psd);
+
+        System.out.println("a1 corresponds to: " + a1_DTMF);
+        System.out.println("b1 corresponds to: " + b1_DTMF);
+    }
+
+    private static double[] parseToneDataFile(String filepath){
+        double[] results = new double[4096];
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filepath));
+            for(int i = 0; i < results.length; i++){
+                String line = br.readLine();
+                if (line != null){
+                    results[i] = Double.parseDouble(line);
+                } else throw new Exception("null line in parseToneDataFile()");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return results;
+    }
+
+    //Takes a double input as a real value and creates a complex number, converts it via regular FFT, and returns the result
+    private static ComplexNumber[] doubleToFFT(double[] inputs){
+        ComplexNumber[] complexValues = new ComplexNumber[inputs.length];
+        for(int i = 0; i < inputs.length; i++){
+            complexValues[i] = new ComplexNumber(inputs[i], 0);
+        }
+        return fastFourierTransform(complexValues, 1);
+    }
+
+    //Takes an psd and returns the corresponding two DTMF tones as Strings
+    private static String mapCorrespondingFrequencies(double[] psdInputs){
+
+        int[] peakIndices = findTwoMaximae(psdInputs); //returns 66 and 153
+        System.out.printf("Peak Indices: %d and %d\n", peakIndices[0], peakIndices[1]);
+        int[] noisyValues = calculateNoisyValues(peakIndices); //Returns 710 and 1647
+        System.out.printf("Noisy Values: %d and %d\n", noisyValues[0], noisyValues[1]);
+        int[] matrixIndices = calculateMatrixIndices(noisyValues); //Returns 0,4
+        System.out.printf("Matrix Indices: %d and %d\n", matrixIndices[0], matrixIndices[1]);
+        String DTMF_Value = calculateDTMF_Values(matrixIndices); //Returns A and 4
+        System.out.printf("DTMF Value: %s\n", DTMF_Value);
+
+
+        return DTMF_Value;
+    }
+
+    //Finds the two largest values in the array of doubles, and returns their indices
+    private static int[] findTwoMaximae(double[] psdInputs){
+        int[] largestIndices = new int[2];
+        double[] largestValues = new double[2];
+
+        //Initialization loop
+        for(int i=0; i<largestIndices.length; i++){
+            largestIndices[i] = -1;
+            largestValues[i] = -1.0;
+        }
+
+        //Note, this is written as O(n^2). It could probably be done much faster, but as this program only needs to run one time it is fine
+        //for now.
+        for(int i = 0; i < psdInputs.length / 2; i++){
+            if(psdInputs[i] >= largestValues[0]){
+                largestValues[0] = psdInputs[i];
+                largestIndices[0] = i;
+            }
+        }
+
+        //Next, find the second-largest index, while making sure to avoid getting nearby bins from the first largest
+        for(int i=0; i < psdInputs.length / 2; i++){
+            if(i < largestIndices[0] - 10 || i > largestIndices[0] + 10){
+                if(psdInputs[i] >= largestValues[1]){
+                    largestValues[1] = psdInputs[i];
+                    largestIndices[1] = i;
+                }
+            }
+        }
+
+        if(largestIndices[0] > largestIndices[1]){
+            int temp = largestIndices[0];
+            largestIndices[0] = largestIndices[1];
+            largestIndices[1] = temp;
+        }
+        return largestIndices;
+    }
+
+    //Applies the formula fk = (k*fs)/N with hard-coded values for values known at design-time
+    //Returns - The two most dominant frequencies in Hz
+    private static int[] calculateNoisyValues(int[] indices){
+        int[] answers = new int[2];
+
+        for(int i = 0; i < answers.length; i++){
+            answers[i] = (indices[i] * 44100)/4096;
+        }
+        return answers;
+    }
+
+    private static int[] calculateMatrixIndices(int[] noisyValues){
+        int[] indices = new int[noisyValues.length];
+
+        for(int j = 0; j < noisyValues.length; j++) {
+            int[] rows = new int[]{697, 770, 852, 941};
+            int[] columns = new int[]{1209, 1336, 1477, 1633};
+            for (int i = 0; i < rows.length; i++) {
+                if(j == 0) {
+                    rows[i] = Math.abs(rows[i] - noisyValues[j]);
+                } else{
+                    columns[i] = Math.abs(columns[i] - noisyValues[j]);
+                }
+            }
+
+            int currentSmallestValue = 10000000;
+            for (int i = 0; i < rows.length; i++) {
+                if (j == 0) {
+                    if (rows[i] < currentSmallestValue) {
+                        currentSmallestValue = rows[i];
+                        indices[j] = i;
+                    }
+                } else {
+                    if (columns[i] < currentSmallestValue) {
+                        currentSmallestValue = columns[i];
+                        indices[j] = i;
+                    }
+                }
+            }
+        }
+        return indices;
+    }
+
+    private static String calculateDTMF_Values(int[] matrix_indices){
+        String[][] DTMF_matrix = new String[][]{
+                {"1", "2", "3", "A"},
+                {"4", "5", "6", "B"},
+                {"7", "8", "9", "C"},
+                {"*", "0", "#", "D"}
+        };
+        return DTMF_matrix[matrix_indices[0]][matrix_indices[1]];
     }
 }

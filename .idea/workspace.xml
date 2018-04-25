@@ -15,11 +15,57 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="15" column="50" selection-start-line="15" selection-start-column="50" selection-end-line="15" selection-end-column="50" />
+            <state relative-caret-position="125">
+              <caret line="728" column="61" lean-forward="true" selection-start-line="728" selection-start-column="61" selection-end-line="728" selection-end-column="61" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="a1_fft.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/question5/a1_fft.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1088">
+              <caret line="64" column="19" selection-start-line="64" selection-end-line="64" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="a1_psd.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/question5/a1_psd.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="68">
+              <caret line="4" column="17" lean-forward="true" selection-end-line="4096" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="b1_psd.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/question5/b1_psd.txt">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file leaf-file-name="b1_fft.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/question5/b1_fft.txt">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file leaf-file-name="toneDataA1.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/question5/toneDataA1.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="887">
+              <caret line="4095" column="3" selection-start-line="4095" selection-start-column="3" selection-end-line="4095" selection-end-column="3" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="toneDataB1.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/question5/toneDataB1.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="640">
+              <caret line="4095" column="2" selection-start-line="4095" selection-start-column="2" selection-end-line="4095" selection-end-column="2" />
             </state>
           </provider>
         </entry>
@@ -76,6 +122,7 @@
       <find>u</find>
       <find>Buffered</find>
       <find>fs50PSD</find>
+      <find>br</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -88,13 +135,15 @@
         <option value="$PROJECT_DIR$/data/fl_in.txt" />
         <option value="$PROJECT_DIR$/data/question4/bp_filter.txt" />
         <option value="$PROJECT_DIR$/data/gl_in.txt" />
+        <option value="$PROJECT_DIR$/data/question5/toneDataA1.txt" />
+        <option value="$PROJECT_DIR$/data/question5/toneDataB1.txt" />
         <option value="$PROJECT_DIR$/src/Main.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="23" />
-    <option name="width" value="720" />
+    <option name="width" value="1440" />
     <option name="height" value="790" />
   </component>
   <component name="ProjectView">
@@ -120,7 +169,7 @@
               <item name="ComplexNumbers" type="b2602c69:ProjectViewProjectNode" />
               <item name="ComplexNumbers" type="462c0819:PsiDirectoryNode" />
               <item name="data" type="462c0819:PsiDirectoryNode" />
-              <item name="question4" type="462c0819:PsiDirectoryNode" />
+              <item name="question5" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ComplexNumbers" type="b2602c69:ProjectViewProjectNode" />
@@ -215,7 +264,8 @@
       <workItem from="1524144940544" duration="496000" />
       <workItem from="1524493799677" duration="27830000" />
       <workItem from="1524577696992" duration="3141000" />
-      <workItem from="1524589856201" duration="4242000" />
+      <workItem from="1524589856201" duration="4274000" />
+      <workItem from="1524667865406" duration="9815000" />
     </task>
     <servers />
   </component>
@@ -252,14 +302,14 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="59118000" />
+    <option name="totallyTimeSpent" value="68965000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="790" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Messages" order="7" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.32960895" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="right" id="Maven Projects" order="3" />
@@ -288,63 +338,10 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="48" />
+      <option name="time" value="50" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10387">
-          <caret line="611" column="41" selection-start-line="611" selection-start-column="41" selection-end-line="611" selection-end-column="41" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ComplexNumber.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1938">
-          <caret line="114" column="45" selection-start-line="114" selection-start-column="45" selection-end-line="114" selection-end-column="45" />
-          <folding>
-            <element signature="e#2330#2331#0" expanded="true" />
-            <element signature="e#2414#2415#0" expanded="true" />
-            <element signature="e#2865#2866#0" expanded="true" />
-            <element signature="e#2893#2894#0" expanded="true" />
-            <element signature="e#2935#2936#0" expanded="true" />
-            <element signature="e#2969#2970#0" expanded="true" />
-            <element signature="e#3006#3007#0" expanded="true" />
-            <element signature="e#3039#3040#0" expanded="true" />
-            <element signature="e#3091#3092#0" expanded="true" />
-            <element signature="e#3135#3136#0" expanded="true" />
-            <element signature="e#3270#3271#0" expanded="true" />
-            <element signature="e#3308#3309#0" expanded="true" />
-            <element signature="e#3448#3449#0" expanded="true" />
-            <element signature="e#3488#3489#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/SignalsDataGenerator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="595">
-          <caret line="37" column="12" selection-start-line="37" selection-start-column="12" selection-end-line="37" selection-end-column="32" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9129">
-          <caret line="537" column="41" selection-start-line="537" selection-start-column="41" selection-end-line="537" selection-end-column="41" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/data/fs50.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="8704">
@@ -768,9 +765,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data/fl_in.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/data/gl_in.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="8687">
@@ -792,10 +786,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/data/question5/toneDataB1.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="640">
+          <caret line="4095" column="2" selection-start-line="4095" selection-start-column="2" selection-end-line="4095" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/question5/toneDataA1.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="887">
+          <caret line="4095" column="3" selection-start-line="4095" selection-start-column="3" selection-end-line="4095" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/question5/b1_fft.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/question5/b1_psd.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/question5/a1_fft.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1088">
+          <caret line="64" column="19" selection-start-line="64" selection-end-line="64" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/question5/a1_psd.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="17" lean-forward="true" selection-end-line="4096" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="50" selection-start-line="15" selection-start-column="50" selection-end-line="15" selection-end-column="50" />
+        <state relative-caret-position="125">
+          <caret line="728" column="61" lean-forward="true" selection-start-line="728" selection-start-column="61" selection-end-line="728" selection-end-column="61" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
