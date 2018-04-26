@@ -70,6 +70,26 @@ public class ComplexNumber {
         this.setArgument(argument);
     }
 
+    //CLASS METHODS
+    //Takes doubles and returns an array of complex numbers, which are those doubles with imaginary components of zero
+    public static ComplexNumber[] generateFromDoubles(double[] inputs){
+        ComplexNumber[] outputs = new ComplexNumber[inputs.length];
+        for(int i = 0; i < inputs.length; i++){
+            outputs[i] = new ComplexNumber(inputs[i], 0);
+        }
+        return outputs;
+    }
+
+    //Takes two arrays of complex numbers and multiplies A[i] * B[i]
+    //Requirements: Arrays must be of the same length
+    public static ComplexNumber[] massMultiply(ComplexNumber[] inputOne, ComplexNumber[] inputTwo){
+        ComplexNumber[] results = new ComplexNumber[inputOne.length];
+        for(int i = 0; i < inputOne.length; i++){
+            results[i] = inputOne[i].multiply(inputTwo[i]);
+        }
+        return results;
+    }
+
     //GETTERS AND SETTERS
 
     public double getzReal() {

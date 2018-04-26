@@ -15,25 +15,26 @@ public class Main {
 //        doQuestionTwo(); //Question 2: Sums of signals vs products of signals
 //        doQuestionThree(); //Question 3: Affect of phase on PSD
 //        doQuestionFour(); //Question 4: Filtering
-        doQuestionFive(); //Question 5: DTMF Tones
+//        doQuestionFive(); //Question 5: DTMF Tones
+        doQuestionSix(); //Question 6: Correlation and Convolution
     }
 
-    public static void testFFT(){
+    public static void testFFT() {
         ComplexNumber[] testInputs = generateTestFFTData();
         ComplexNumber[] results = fastFourierTransform(testInputs, 1);
         System.out.println("\nThe fft of the data\n");
-        for(int i = 0; i < results.length; i++){
+        for (int i = 0; i < results.length; i++) {
             System.out.format("%f + %fi\n", results[i].getzReal(), results[i].getzImaginary());
         }
 
         ComplexNumber[] inverseResults = fastFourierTransform(results, -1);
         System.out.println("\nThe inverse of the data\n");
-        for(int i = 0; i < results.length; i++){
+        for (int i = 0; i < results.length; i++) {
             System.out.format("%f + %fi\n", inverseResults[i].getzReal(), inverseResults[i].getzImaginary());
         }
     }
 
-    public static void testTwoDFFT(){
+    public static void testTwoDFFT() {
         System.out.println("Testing 2D FFT...");
         ComplexNumber[][] data = generateTest2DData();
         ComplexNumber[][] results = twoDFFT(data);
@@ -41,7 +42,7 @@ public class Main {
         printTwoDArray(results);
     }
 
-    public static void testSignalsDataGenerator(){
+    public static void testSignalsDataGenerator() {
         SignalsDataGenerator testGenerator = new SignalsDataGenerator("data/test_output.txt");
         testGenerator.writeResult("Hello world!");
         testGenerator.flushFile();
@@ -51,14 +52,14 @@ public class Main {
 
     }
 
-    public static void doCommonSignalsProblem(){
+    public static void doCommonSignalsProblem() {
         //Commented out to prevent constant rewriting of the same values to output files, uncomment for functionality
         doFS();
         doGS();
         doPSDEstimates(); //Does the PSD Estimates for f50 and g50, as per question 1b
     }
 
-    private static void doQuestionTwo(){
+    private static void doQuestionTwo() {
         //x(t) = v1(t) + v2(t)
         //y(t) = v1(t) * v2(t)
 
@@ -77,10 +78,10 @@ public class Main {
 
     //This method generates v in the time domain, where v1[i] = sin(2*pi*f*t), where t=i/512 (the time interval)
     //f - frequency to be calculated
-    private static double[] generateV(int frequency){
-        final double INTERVAL = 1.0/512.0;
+    private static double[] generateV(int frequency) {
+        final double INTERVAL = 1.0 / 512.0;
         double[] results = new double[512];
-        for(int i = 0; i < results.length; i++){
+        for (int i = 0; i < results.length; i++) {
             double t = i * INTERVAL;
             double answer = Math.sin(2 * Math.PI * frequency * t);
             results[i] = answer;
@@ -89,9 +90,9 @@ public class Main {
     }
 
     //This method takes two functions and adds them together, returning an array of complex numbers
-    private static ComplexNumber[] generateXT(double[] v1, double[] v2){
+    private static ComplexNumber[] generateXT(double[] v1, double[] v2) {
         ComplexNumber[] results = new ComplexNumber[v1.length];
-        for(int i = 0; i < results.length; i++){
+        for (int i = 0; i < results.length; i++) {
             ComplexNumber answer = new ComplexNumber(v1[i] + v2[i], 0);
             results[i] = answer;
         }
@@ -99,33 +100,33 @@ public class Main {
     }
 
     //This method takes two functions and multiplies them together, returning an array of complex numbers
-    private static ComplexNumber[] generateYT(double[] v1, double[] v2){
+    private static ComplexNumber[] generateYT(double[] v1, double[] v2) {
         ComplexNumber[] results = new ComplexNumber[v1.length];
-        for(int i = 0; i < results.length; i++){
+        for (int i = 0; i < results.length; i++) {
             ComplexNumber answer = new ComplexNumber(v1[i] * v2[i], 0);
             results[i] = answer;
         }
         return results;
     }
 
-    public static void doFS(){
+    public static void doFS() {
         runFS(3, "data/fs3.txt");
         runFS(10, "data/fs10.txt");
         runFS(50, "data/fs50.txt");
     }
 
-    public static void runFS(int sTerm, String filename){
+    public static void runFS(int sTerm, String filename) {
         SignalsDataGenerator writer = new SignalsDataGenerator(filename);
         writer.clearFile();
         //Interval for t(time) to increase by
-        final double INTERVAL = 1.0/512.0;
+        final double INTERVAL = 1.0 / 512.0;
         final int ITERATIONS = 512;
 
-        for(int i = 1; i <= ITERATIONS; i++){
+        for (int i = 1; i <= ITERATIONS; i++) {
             double t = i * INTERVAL;
             double result = 0;
-            for(int k = 1; k <= sTerm; k++){
-                result += (Math.sin(2.0 * Math.PI * (2*k - 1) * t))/(2*k-1);
+            for (int k = 1; k <= sTerm; k++) {
+                result += (Math.sin(2.0 * Math.PI * (2 * k - 1) * t)) / (2 * k - 1);
             }
             String toWrite = Double.toString(result);
             writer.writeResult(toWrite);
@@ -134,24 +135,24 @@ public class Main {
         writer.closeFile();
     }
 
-    public static void doGS(){
+    public static void doGS() {
         runGS(3, "data/gs3.txt");
         runGS(10, "data/gs10.txt");
         runGS(50, "data/gs50.txt");
     }
 
-    public static void runGS(int sTerm, String filename){
+    public static void runGS(int sTerm, String filename) {
         SignalsDataGenerator writer = new SignalsDataGenerator(filename);
         writer.clearFile();
         //Interval for t(time) to increase by
-        final double INTERVAL = 1.0/512.0;
+        final double INTERVAL = 1.0 / 512.0;
         final int ITERATIONS = 512;
 
-        for(int i = 1; i <= ITERATIONS; i++){
+        for (int i = 1; i <= ITERATIONS; i++) {
             double t = i * INTERVAL;
             double result = 0;
-            for(int k = 1; k <= sTerm; k++){
-                result += (Math.sin(2.0 * Math.PI * (2*k) * t))/(2*k);
+            for (int k = 1; k <= sTerm; k++) {
+                result += (Math.sin(2.0 * Math.PI * (2 * k) * t)) / (2 * k);
             }
             String toWrite = Double.toString(result);
             writer.writeResult(toWrite);
@@ -159,8 +160,9 @@ public class Main {
 
         writer.closeFile();
     }
+
     //Question 1B: Displays only the positive frequencies
-    private static void doPSDEstimates(){
+    private static void doPSDEstimates() {
         final String FSPSD_FILENAME = "data/fs50PSD.txt";
         final String GSPSD_FILENAME = "data/gs50PSD.txt";
 
@@ -182,7 +184,7 @@ public class Main {
 
     }
 
-    private static void doPSD(String inputDataFilename, String outputDataFilename){
+    private static void doPSD(String inputDataFilename, String outputDataFilename) {
         ComplexNumber[] inputNumbers = parseInputs(inputDataFilename);
         ComplexNumber[] fftResults = fastFourierTransform(inputNumbers, 1);
         double[] psdResults = convertFFTToPSD(fftResults);
@@ -190,15 +192,15 @@ public class Main {
     }
 
     //Used if we already have the ComplexNumber[] array from some other source
-    private static void doPSD(ComplexNumber[] inputNumbers, String outputDataFilename){
-        ComplexNumber[]fftResults = fastFourierTransform(inputNumbers, 1);
+    private static void doPSD(ComplexNumber[] inputNumbers, String outputDataFilename) {
+        ComplexNumber[] fftResults = fastFourierTransform(inputNumbers, 1);
         double[] psdResults = convertFFTToPSD(fftResults);
         outputPSDResults(psdResults, outputDataFilename);
     }
 
     //Assumes a file where each line is a single number, to be converted into a complex number.
     //Assumes inputs are real numbers (non-complex or imaginary)
-    private static ComplexNumber[] parseInputs(String filename){
+    private static ComplexNumber[] parseInputs(String filename) {
         ComplexNumber[] numbers = new ComplexNumber[512];
         int count = 0;
         try {
@@ -206,8 +208,8 @@ public class Main {
             BufferedReader br = new BufferedReader(new FileReader(file));
 
             String line;
-            while((line = br.readLine()) != null){
-                if(!line.isEmpty()) {
+            while ((line = br.readLine()) != null) {
+                if (!line.isEmpty()) {
                     double value = Double.parseDouble(line);
                     ComplexNumber number = new ComplexNumber(value, 0);
                     numbers[count] = number;
@@ -217,16 +219,16 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(count != numbers.length) {
+        if (count != numbers.length) {
             System.out.println("Warning: parseInputs() did not parse the expected amount of numbers. Parsed a total of " + Integer.toString(count) + " numbers");
         }
         return numbers;
     }
 
-    private static double[] convertFFTToPSD(ComplexNumber[] fftValues){
+    private static double[] convertFFTToPSD(ComplexNumber[] fftValues) {
         //To convert FFT to PSD, you take the modulus and square it
         double[] results = new double[fftValues.length];
-        for(int i = 0; i < results.length; i++){
+        for (int i = 0; i < results.length; i++) {
             double answer = Math.pow(fftValues[i].getModulus(), 2);
             results[i] = answer;
         }
@@ -234,15 +236,15 @@ public class Main {
     }
 
     //Only outputs the positive (first half) of PSD results, due to symmetrical nature
-    private static void outputPSDResults(double[] values, String filename){
+    private static void outputPSDResults(double[] values, String filename) {
         SignalsDataGenerator writer = new SignalsDataGenerator(filename);
         writer.clearFile();
-        for(int i = 0; i < values.length; i++){
-            if(values[i] >= 0){
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] >= 0) {
                 String toWrite;
-                if(values[i] < .0001 && values[i] > -0.0001) {
+                if (values[i] < .0001 && values[i] > -0.0001) {
                     toWrite = "0";
-                } else{
+                } else {
                     double value = values[i];
                     toWrite = Double.toString(values[i]);
                 }
@@ -255,7 +257,7 @@ public class Main {
     //Method that applies a Fast Fourier Transform to an Nx1 vector of complex numbers
     //Params: inputs - the Nx1 array
     //        d - the direction code. Either 1 for FFT or -1 for inverse FFT
-    public static ComplexNumber[] fastFourierTransform(ComplexNumber[] testInputs, int d){
+    public static ComplexNumber[] fastFourierTransform(ComplexNumber[] testInputs, int d) {
         int k;
         ComplexNumber t;
         ComplexNumber[] inputs = new ComplexNumber[testInputs.length];
@@ -263,75 +265,75 @@ public class Main {
 
         //1) Set theta = (-2*pi*d)/N and r = N/2
         double N = inputs.length;
-        double theta = (-2 * Math.PI * d)/N;
-        int r = (int) Math.floor(N/2);
+        double theta = (-2 * Math.PI * d) / N;
+        int r = (int) Math.floor(N / 2);
         //2)For i = 1 to N-1:
-        for(int i = 1; i < N; i++){
+        for (int i = 1; i < N; i++) {
             //2a: Set w = cos(i*theta) + jsin(i*theta)
-            double real = Math.cos(i*theta);
-            double imaginary = Math.sin(i*theta);
+            double real = Math.cos(i * theta);
+            double imaginary = Math.sin(i * theta);
             ComplexNumber w = new ComplexNumber(real, imaginary);
 
             //2b: For k = 0 to N-1 do:
-            for(k = 0; k < N; k++){
+            for (k = 0; k < N; k++) {
                 //b-1: Set u=1
                 ComplexNumber u = new ComplexNumber(1, 0);
                 //b-2: For m = 0 to r-1 do:
-                for(int m = 0; m < r; m++){
-                    t = inputs[k+m].subtract(inputs[(k+m+r)]);
-                    inputs[k+m] = inputs[k+m].add(inputs[k+m+r]);
-                    inputs[k+m+r] = t.multiply(u);
+                for (int m = 0; m < r; m++) {
+                    t = inputs[k + m].subtract(inputs[(k + m + r)]);
+                    inputs[k + m] = inputs[k + m].add(inputs[k + m + r]);
+                    inputs[k + m + r] = t.multiply(u);
                     u = w.multiply(u);
                 }
                 //b-3: set k = k+2r
-                k = k + 2*r -1; //-1 due to loop incrementation
+                k = k + 2 * r - 1; //-1 due to loop incrementation
             }
             //2c: Set i = 2i and r = r/2
-            i = 2*i-1; //-1 due to loop incrementation
-            r = r/2;
+            i = 2 * i - 1; //-1 due to loop incrementation
+            r = r / 2;
         }
         //3) For i = 0 to N-1 do:
-        for(int i=0; i < N; i++){
+        for (int i = 0; i < N; i++) {
             //3a: Set r=i and k = 0
             r = i;
             k = 0;
             //3b: For m = 1 to N-1 do:
             int m = 1;
-            while(m < N){
+            while (m < N) {
                 k = 2 * k + (r % 2);
                 r = r / 2;
                 m = 2 * m;
             }
             //3c: If k > i do:
-            if(k > i){
+            if (k > i) {
                 t = inputs[i];
                 inputs[i] = inputs[k];
                 inputs[k] = t;
             }
         }
         //4) If d < 0 then for i = 0 to N-1 do:
-        if(d < 0){
-            for(int i = 0; i < N; i++){
+        if (d < 0) {
+            for (int i = 0; i < N; i++) {
                 inputs[i] = inputs[i].divide(N);
             }
         }
         return inputs;
     }
 
-    public static ComplexNumber[][] twoDFFT(ComplexNumber[][] userInputs){
+    public static ComplexNumber[][] twoDFFT(ComplexNumber[][] userInputs) {
         //Copy array
         ComplexNumber[][] inputs = new ComplexNumber[userInputs.length][userInputs[0].length];
-        for(int i = 0; i < inputs.length; i++) {
+        for (int i = 0; i < inputs.length; i++) {
             System.arraycopy(userInputs[i], 0, inputs[i], 0, inputs[i].length);
         }
 
         final int STANDARD_FFT = 1;
         ComplexNumber[][] temp = new ComplexNumber[inputs.length][inputs[0].length];
         ComplexNumber finalResult[][] = new ComplexNumber[inputs.length][inputs[0].length];
-        for(int k = 0; k < inputs.length; k++){
+        for (int k = 0; k < inputs.length; k++) {
             //Do rows
             ComplexNumber[] row = new ComplexNumber[inputs[k].length];
-            System.arraycopy(inputs[k],0,row,0,row.length);
+            System.arraycopy(inputs[k], 0, row, 0, row.length);
             ComplexNumber[] rowResult = fastFourierTransform(row, STANDARD_FFT);
             temp[k] = rowResult;
         }
@@ -339,23 +341,23 @@ public class Main {
         System.out.println("First pass:");
         printTwoDArray(temp);
         //Do Columns
-        for(int n = 0; n < inputs[0].length; n++){
+        for (int n = 0; n < inputs[0].length; n++) {
             ComplexNumber[] column = new ComplexNumber[inputs.length];
-            for(int i = 0; i < column.length; i++){
+            for (int i = 0; i < column.length; i++) {
                 //add values to form the column
                 column[i] = temp[i][n];
             }
             System.out.format("\nColumn: ");
-            for(int x = 0; x < column.length; x++) {
+            for (int x = 0; x < column.length; x++) {
                 System.out.format("%.2f ", column[x].getzReal());
             }
             ComplexNumber[] columnResult = fastFourierTransform(column, STANDARD_FFT);
             System.out.format("\nColumnFFT: ");
-            for(int x = 0; x < columnResult.length; x++) {
+            for (int x = 0; x < columnResult.length; x++) {
                 System.out.format("%.2f ", columnResult[x].getzReal());
             }
             //Store as column in final result
-            for(int i = 0; i < column.length; i++){
+            for (int i = 0; i < column.length; i++) {
                 //add values to form the column
                 finalResult[i][n] = columnResult[i];
             }
@@ -364,21 +366,21 @@ public class Main {
     }
 
     private static void printTwoDArray(ComplexNumber[][] array) {
-        for(int i = 0; i < array.length; i++){
-            for(int j = 0; j < array[0].length; j++){
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[0].length; j++) {
                 System.out.format("%.2f ", array[i][j].getzReal());
-                if(j % 7 == 0 && j != 0){
+                if (j % 7 == 0 && j != 0) {
                     System.out.format("\n");
                 }
             }
         }
     }
 
-    private static ComplexNumber[] generateTestFFTData(){
+    private static ComplexNumber[] generateTestFFTData() {
         double[] reals = {26160.0, 19011.0, 18757, 18405, 17888, 14720, 14285,
-        17018, 18014, 17119, 16400, 17497, 17846, 15700, 17636, 17181};
+                17018, 18014, 17119, 16400, 17497, 17846, 15700, 17636, 17181};
         ComplexNumber[] data = new ComplexNumber[reals.length];
-        for(int i = 0; i < reals.length; i++){
+        for (int i = 0; i < reals.length; i++) {
             data[i] = new ComplexNumber(reals[i], 0);
         }
         return data;
@@ -397,7 +399,7 @@ public class Main {
         };
         ComplexNumber[][] data = new ComplexNumber[reals.length][reals[0].length];
         for (int i = 0; i < reals.length; i++) {
-            for(int j = 0; j < reals[0].length; j++){
+            for (int j = 0; j < reals[0].length; j++) {
                 ComplexNumber entry = new ComplexNumber(reals[i][j], 0);
                 data[i][j] = entry;
             }
@@ -405,12 +407,12 @@ public class Main {
         return data;
     }
 
-    private static void doQuestionThree(){
+    private static void doQuestionThree() {
 //        examineTimeVariations(); //Question 3a
         examineHT(); //Question 3b
     }
 
-    private static void examineTimeVariations(){
+    private static void examineTimeVariations() {
         ComplexNumber[] start = generateSinglePulse(0, 256);
         ComplexNumber[] mid = generateSinglePulse(127, 256);
         ComplexNumber[] random = generateSinglePulse(38, 256);
@@ -420,11 +422,11 @@ public class Main {
         doPSD(random, "data/question3/random.txt");
     }
 
-    private static ComplexNumber[] generateSinglePulse(int pulseLocation, int length){
+    private static ComplexNumber[] generateSinglePulse(int pulseLocation, int length) {
         ComplexNumber[] results = new ComplexNumber[length];
-        for(int i = 0; i < length; i++){
+        for (int i = 0; i < length; i++) {
             double value = 0.0;
-            if(i == pulseLocation){
+            if (i == pulseLocation) {
                 value = 1.0;
             }
             results[i] = new ComplexNumber(value, 0);
@@ -432,7 +434,7 @@ public class Main {
         return results;
     }
 
-    private static void examineHT(){
+    private static void examineHT() {
         ComplexNumber[] ht = generateHT(0, "data/question3/ht_raw.txt"); //h(t) = sin(20 * PI * t)
         ComplexNumber[] ht_shifted = generateHT(0.43, "data/question3/ht_shifted.txt");
 
@@ -449,13 +451,13 @@ public class Main {
 
     //Generates h(t)
     //c - phase shift in function sin(20 * pi * (t-c))
-    private static ComplexNumber[] generateHT(double c, String filename){
+    private static ComplexNumber[] generateHT(double c, String filename) {
         SignalsDataGenerator writer = new SignalsDataGenerator(filename);
         ComplexNumber[] results = new ComplexNumber[512];
-        final double INTERVAL = 1.0/512.0;
-        for(int i = 0; i < results.length; i++){
-            double t = i*INTERVAL;
-            ComplexNumber answer = new ComplexNumber(Math.sin(20.0 * Math.PI * (t-c)), 0);
+        final double INTERVAL = 1.0 / 512.0;
+        for (int i = 0; i < results.length; i++) {
+            double t = i * INTERVAL;
+            ComplexNumber answer = new ComplexNumber(Math.sin(20.0 * Math.PI * (t - c)), 0);
             results[i] = answer;
             writer.writeResult(Double.toString(answer.getzReal()));
         }
@@ -464,14 +466,14 @@ public class Main {
     }
 
     //purpose: This method is used to output a ComplexNumber to a file. For use in problem 3.b.i
-    private static void outputFFTRealsToFile(ComplexNumber[] values, String filename){
+    private static void outputFFTRealsToFile(ComplexNumber[] values, String filename) {
         SignalsDataGenerator writer = new SignalsDataGenerator(filename);
         writer.clearFile();
-        for(int i = 0; i < values.length; i++){
+        for (int i = 0; i < values.length; i++) {
             String real;
-            if(values[i].getzReal() > -.0000000001 && values[i].getzReal() < .0000000001) {
+            if (values[i].getzReal() > -.0000000001 && values[i].getzReal() < .0000000001) {
                 real = "0";
-            } else{
+            } else {
                 real = Double.toString(values[i].getzReal());
             }
             writer.writeResult(real);
@@ -479,10 +481,10 @@ public class Main {
         writer.closeFile();
     }
 
-    private static void doQuestionFour(){
+    private static void doQuestionFour() {
         double[] fs50 = parseFS50();
         ComplexNumber[] fs50_complex = new ComplexNumber[fs50.length];
-        for(int i = 0; i < fs50_complex.length; i++){
+        for (int i = 0; i < fs50_complex.length; i++) {
             fs50_complex[i] = new ComplexNumber(fs50[i], 0);
         }
         ComplexNumber[] fs50_fft = fastFourierTransform(fs50_complex, 1);
@@ -499,7 +501,7 @@ public class Main {
         double[] notch_time = convertFilteredSignalToTimeDomain(notchFS);
 
         System.out.println("fs50 after reconversion:");
-        for(int i = 0; i < fs50.length / 2; i++){
+        for (int i = 0; i < fs50.length / 2; i++) {
             System.out.format("%6.10f\n", fs50_time[i]);
         }
 
@@ -519,7 +521,7 @@ public class Main {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
             for (int i = 0; i < results.length; i++) {
-                if ((line = br.readLine()) != null && !line.isEmpty()){
+                if ((line = br.readLine()) != null && !line.isEmpty()) {
                     results[i] = Double.parseDouble(line);
                 }
             }
@@ -531,16 +533,16 @@ public class Main {
 
     //Puts a low-pass filter
     //int numValuesToPass - passes only this many through
-    private static ComplexNumber[] lowPassFilter(ComplexNumber[] originalInput, int numValuesToPass){
+    private static ComplexNumber[] lowPassFilter(ComplexNumber[] originalInput, int numValuesToPass) {
         ComplexNumber[] filter = new ComplexNumber[originalInput.length];
 
         //Create the filter
-        for(int i = 0; i < filter.length; i++){
+        for (int i = 0; i < filter.length; i++) {
             double filterValue;
             ComplexNumber currentValue = originalInput[i];
-            if(!realIsZero(currentValue)){
+            if (!realIsZero(currentValue)) {
                 //If the value is non-zero:
-                if(numValuesToPass > 0){
+                if (numValuesToPass > 0) {
                     //if we need to pass more frequencies
                     filterValue = 1.0;
                     numValuesToPass--;
@@ -550,10 +552,10 @@ public class Main {
                 }
             } else {
                 //The value is a zero
-                if(numValuesToPass > 0){
+                if (numValuesToPass > 0) {
                     //We are currently applying filters of 1
                     filterValue = 1;
-                } else{
+                } else {
                     //We are applying filters of 0
                     filterValue = 0;
                 }
@@ -562,7 +564,7 @@ public class Main {
         }
 
         ComplexNumber[] results = new ComplexNumber[filter.length];
-        for(int i = 0; i < filter.length; i++){
+        for (int i = 0; i < filter.length; i++) {
             results[i] = originalInput[i].multiply(filter[i]);
         }
 
@@ -570,14 +572,14 @@ public class Main {
     }
 
     //Passes the upper 'numValuesToPass' number of values
-    private static ComplexNumber[] highPassFilter(ComplexNumber[] originalInput, int numValuesToPass){
+    private static ComplexNumber[] highPassFilter(ComplexNumber[] originalInput, int numValuesToPass) {
         ComplexNumber[] filter = new ComplexNumber[originalInput.length];
-        for(int i = filter.length - 1; i >= 0; i--){
+        for (int i = filter.length - 1; i >= 0; i--) {
             double filterValue;
             ComplexNumber currentValue = originalInput[i];
-            if(!realIsZero(currentValue)){
+            if (!realIsZero(currentValue)) {
                 //If the value is non-zero:
-                if(numValuesToPass > 0){
+                if (numValuesToPass > 0) {
                     //if we need to pass more frequencies
                     filterValue = 1.0;
                     numValuesToPass--;
@@ -587,10 +589,10 @@ public class Main {
                 }
             } else {
                 //The value is a zero
-                if(numValuesToPass > 0){
+                if (numValuesToPass > 0) {
                     //We are currently applying filters of 1
                     filterValue = 1;
-                } else{
+                } else {
                     //We are applying filters of 0
                     filterValue = 0;
                 }
@@ -598,7 +600,7 @@ public class Main {
             filter[i] = new ComplexNumber(filterValue, 0);
         }
         ComplexNumber[] results = new ComplexNumber[filter.length];
-        for(int i = 0; i < filter.length; i++){
+        for (int i = 0; i < filter.length; i++) {
             results[i] = originalInput[i].multiply(filter[i]);
         }
 
@@ -606,14 +608,13 @@ public class Main {
     }
 
 
-
-    private static ComplexNumber[] bandPassFilter(ComplexNumber[] originalInput, int startingIndexToPass, int endingIndexToPassInclusive){
+    private static ComplexNumber[] bandPassFilter(ComplexNumber[] originalInput, int startingIndexToPass, int endingIndexToPassInclusive) {
         ComplexNumber[] filter = new ComplexNumber[originalInput.length];
         int non_zero_index = 0;
-        for(int i = 0; i < filter.length; i++){
+        for (int i = 0; i < filter.length; i++) {
             double filterValue;
             ComplexNumber currentValue = originalInput[i];
-            if(!realIsZero(currentValue)){
+            if (!realIsZero(currentValue)) {
                 //Value is non-zero
                 non_zero_index++;
             }
@@ -621,15 +622,15 @@ public class Main {
             filter[i] = new ComplexNumber(filterValue, 0);
         }
         ComplexNumber[] results = new ComplexNumber[filter.length];
-        for(int i = 0; i < filter.length; i++){
+        for (int i = 0; i < filter.length; i++) {
             results[i] = originalInput[i].multiply(filter[i]);
         }
 
         return results;
     }
 
-    private static double inRange(int startingIndexToPass, int endingIndexToPassInclusive, int non_zero_index){
-        if(non_zero_index >= startingIndexToPass && non_zero_index <= endingIndexToPassInclusive){
+    private static double inRange(int startingIndexToPass, int endingIndexToPassInclusive, int non_zero_index) {
+        if (non_zero_index >= startingIndexToPass && non_zero_index <= endingIndexToPassInclusive) {
             //pass this value
             return 1.0;
         } else {
@@ -638,20 +639,20 @@ public class Main {
         }
     }
 
-    private static ComplexNumber[] notchFilter(ComplexNumber[] originalInput, int startingIndexToSuppress, int endIndexToSuppress){
+    private static ComplexNumber[] notchFilter(ComplexNumber[] originalInput, int startingIndexToSuppress, int endIndexToSuppress) {
         ComplexNumber[] filter = new ComplexNumber[originalInput.length];
         int non_zero_index = 0;
-        for(int i = 0; i < filter.length; i++){
+        for (int i = 0; i < filter.length; i++) {
             double filterValue;
             ComplexNumber currentValue = originalInput[i];
-            if(!realIsZero(currentValue)){
+            if (!realIsZero(currentValue)) {
                 //Value is non-zero
                 non_zero_index++;
             }
             filterValue = inRange(startingIndexToSuppress, endIndexToSuppress, non_zero_index);
 
             //Flips value so we suppress instead of passing
-            if(filterValue == 1.0){
+            if (filterValue == 1.0) {
                 filterValue = 0;
             } else {
                 filterValue = 1.0;
@@ -659,18 +660,18 @@ public class Main {
             filter[i] = new ComplexNumber(filterValue, 0);
         }
         ComplexNumber[] results = new ComplexNumber[filter.length];
-        for(int i = 0; i < filter.length; i++){
+        for (int i = 0; i < filter.length; i++) {
             results[i] = originalInput[i].multiply(filter[i]);
         }
 
         return results;
     }
 
-    private static void outputComplexToFile(ComplexNumber[] values, String filepath){
+    private static void outputComplexToFile(ComplexNumber[] values, String filepath) {
         SignalsDataGenerator writer = new SignalsDataGenerator(filepath);
         writer.clearFile();
         String toWrite;
-        for(int i = 0; i < values.length; i++){
+        for (int i = 0; i < values.length; i++) {
             String zReal = Double.toString(values[i].getzReal());
             String zImg = Double.toString(values[i].getzImaginary());
             toWrite = zReal + " + " + zImg + "i";
@@ -679,37 +680,37 @@ public class Main {
         writer.closeFile();
     }
 
-    private static boolean realIsZero(ComplexNumber currentValue){
-        if(currentValue.getzReal() > -.000001 && currentValue.getzReal() < .000001){
+    private static boolean realIsZero(ComplexNumber currentValue) {
+        if (currentValue.getzReal() > -.000001 && currentValue.getzReal() < .000001) {
             return true;
         } else return false;
     }
 
     //Takes a signal and applies an inverted FFT, and returns the real numbers of that value
-    private static double[] convertFilteredSignalToTimeDomain(ComplexNumber[] inputs){
+    private static double[] convertFilteredSignalToTimeDomain(ComplexNumber[] inputs) {
         double[] results = new double[inputs.length];
 
         //Take filtered signal and apply FFT^-1
         ComplexNumber[] invertedSignal = fastFourierTransform(inputs, -1);
 
         //Return reals
-        for(int i = 0; i < results.length; i++){
+        for (int i = 0; i < results.length; i++) {
             results[i] = invertedSignal[i].getzReal();
         }
 
         return results;
     }
 
-    private static void outputQuestion4(double[] output, String filepath){
+    private static void outputQuestion4(double[] output, String filepath) {
         SignalsDataGenerator writer = new SignalsDataGenerator(filepath);
         writer.clearFile();
-        for(int i = 0; i < output.length; i++){
+        for (int i = 0; i < output.length; i++) {
             writer.writeResult(Double.toString(output[i]));
         }
         writer.closeFile();
     }
 
-    private static void doQuestionFive(){
+    private static void doQuestionFive() {
         double[] a1 = parseToneDataFile("data/question5/toneDataA1.txt");
         double[] b1 = parseToneDataFile("data/question5/toneDataB1.txt");
 
@@ -732,13 +733,13 @@ public class Main {
         System.out.println("b1 corresponds to: " + b1_DTMF);
     }
 
-    private static double[] parseToneDataFile(String filepath){
+    private static double[] parseToneDataFile(String filepath) {
         double[] results = new double[4096];
         try {
             BufferedReader br = new BufferedReader(new FileReader(filepath));
-            for(int i = 0; i < results.length; i++){
+            for (int i = 0; i < results.length; i++) {
                 String line = br.readLine();
-                if (line != null){
+                if (line != null) {
                     results[i] = Double.parseDouble(line);
                 } else throw new Exception("null line in parseToneDataFile()");
             }
@@ -749,16 +750,16 @@ public class Main {
     }
 
     //Takes a double input as a real value and creates a complex number, converts it via regular FFT, and returns the result
-    private static ComplexNumber[] doubleToFFT(double[] inputs){
+    private static ComplexNumber[] doubleToFFT(double[] inputs) {
         ComplexNumber[] complexValues = new ComplexNumber[inputs.length];
-        for(int i = 0; i < inputs.length; i++){
+        for (int i = 0; i < inputs.length; i++) {
             complexValues[i] = new ComplexNumber(inputs[i], 0);
         }
         return fastFourierTransform(complexValues, 1);
     }
 
     //Takes an psd and returns the corresponding two DTMF tones as Strings
-    private static String mapCorrespondingFrequencies(double[] psdInputs){
+    private static String mapCorrespondingFrequencies(double[] psdInputs) {
 
         int[] peakIndices = findTwoMaximae(psdInputs); //returns 66 and 153
         System.out.printf("Peak Indices: %d and %d\n", peakIndices[0], peakIndices[1]);
@@ -774,36 +775,36 @@ public class Main {
     }
 
     //Finds the two largest values in the array of doubles, and returns their indices
-    private static int[] findTwoMaximae(double[] psdInputs){
+    private static int[] findTwoMaximae(double[] psdInputs) {
         int[] largestIndices = new int[2];
         double[] largestValues = new double[2];
 
         //Initialization loop
-        for(int i=0; i<largestIndices.length; i++){
+        for (int i = 0; i < largestIndices.length; i++) {
             largestIndices[i] = -1;
             largestValues[i] = -1.0;
         }
 
         //Note, this is written as O(n^2). It could probably be done much faster, but as this program only needs to run one time it is fine
         //for now.
-        for(int i = 0; i < psdInputs.length / 2; i++){
-            if(psdInputs[i] >= largestValues[0]){
+        for (int i = 0; i < psdInputs.length / 2; i++) {
+            if (psdInputs[i] >= largestValues[0]) {
                 largestValues[0] = psdInputs[i];
                 largestIndices[0] = i;
             }
         }
 
         //Next, find the second-largest index, while making sure to avoid getting nearby bins from the first largest
-        for(int i=0; i < psdInputs.length / 2; i++){
-            if(i < largestIndices[0] - 10 || i > largestIndices[0] + 10){
-                if(psdInputs[i] >= largestValues[1]){
+        for (int i = 0; i < psdInputs.length / 2; i++) {
+            if (i < largestIndices[0] - 10 || i > largestIndices[0] + 10) {
+                if (psdInputs[i] >= largestValues[1]) {
                     largestValues[1] = psdInputs[i];
                     largestIndices[1] = i;
                 }
             }
         }
 
-        if(largestIndices[0] > largestIndices[1]){
+        if (largestIndices[0] > largestIndices[1]) {
             int temp = largestIndices[0];
             largestIndices[0] = largestIndices[1];
             largestIndices[1] = temp;
@@ -813,25 +814,25 @@ public class Main {
 
     //Applies the formula fk = (k*fs)/N with hard-coded values for values known at design-time
     //Returns - The two most dominant frequencies in Hz
-    private static int[] calculateNoisyValues(int[] indices){
+    private static int[] calculateNoisyValues(int[] indices) {
         int[] answers = new int[2];
 
-        for(int i = 0; i < answers.length; i++){
-            answers[i] = (indices[i] * 44100)/4096;
+        for (int i = 0; i < answers.length; i++) {
+            answers[i] = (indices[i] * 44100) / 4096;
         }
         return answers;
     }
 
-    private static int[] calculateMatrixIndices(int[] noisyValues){
+    private static int[] calculateMatrixIndices(int[] noisyValues) {
         int[] indices = new int[noisyValues.length];
 
-        for(int j = 0; j < noisyValues.length; j++) {
+        for (int j = 0; j < noisyValues.length; j++) {
             int[] rows = new int[]{697, 770, 852, 941};
             int[] columns = new int[]{1209, 1336, 1477, 1633};
             for (int i = 0; i < rows.length; i++) {
-                if(j == 0) {
+                if (j == 0) {
                     rows[i] = Math.abs(rows[i] - noisyValues[j]);
-                } else{
+                } else {
                     columns[i] = Math.abs(columns[i] - noisyValues[j]);
                 }
             }
@@ -854,7 +855,7 @@ public class Main {
         return indices;
     }
 
-    private static String calculateDTMF_Values(int[] matrix_indices){
+    private static String calculateDTMF_Values(int[] matrix_indices) {
         String[][] DTMF_matrix = new String[][]{
                 {"1", "2", "3", "A"},
                 {"4", "5", "6", "B"},
@@ -863,4 +864,137 @@ public class Main {
         };
         return DTMF_matrix[matrix_indices[0]][matrix_indices[1]];
     }
+
+    private static void doQuestionSix() {
+        do6A(); //6A: Correlation
+//        do6B(); //6B: Convolution
+    }
+
+    private static void do6A() {
+        double[] response_signal = parseResponseSignal("data/question6/response_samples.txt");
+        double[] pulse_signal = parsePulseSignal("data/question6/pulse_samples.txt");
+        double[] padded_pulse_signal = padPulseSignal(pulse_signal, response_signal.length);
+        double[] real_corr = calculateCorrelation(response_signal, padded_pulse_signal);
+        int max_corr_index = findMaximumCorrelation(real_corr);
+        double[] corrected_pulse_signal = bufferPulseSignal(pulse_signal, max_corr_index, real_corr.length);
+        outputRealsToFile(corrected_pulse_signal, "data/question6/corrected_pulse_signal.txt");
+        outputRealsToFile(real_corr, "data/question6/correlation.txt");
+        print6AResults(max_corr_index);
+    }
+
+    private static double[] parseResponseSignal(String filepath) {
+        double[] response_signal = parseDoublesFromFile(filepath, 1024);
+        return response_signal;
+    }
+
+    private static double[] parsePulseSignal(String filepath) {
+        return parseDoublesFromFile(filepath, 52);
+    }
+
+    private static double[] parseDoublesFromFile(String filepath, int numDoubles) {
+        double[] values = new double[numDoubles];
+        String line;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filepath));
+            for (int i = 0; i < values.length; i++) {
+                line = br.readLine();
+                values[i] = Double.parseDouble(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return values;
+    }
+
+    private static double[] padPulseSignal(double[] originalSignal, int finalSize) {
+        double[] paddedSignal = new double[finalSize];
+        int numZerosNeeded = finalSize - originalSignal.length;
+        for (int i = 0; i < finalSize; i++) {
+            if (numZerosNeeded > 0) {
+                if (i < originalSignal.length) {
+                    paddedSignal[i] = originalSignal[i];
+                } else {
+                    paddedSignal[i] = 0.0;
+                    numZerosNeeded--;
+                }
+
+            }
+        }
+        return paddedSignal;
+    }
+
+    //fastCorrelation is calculated with the following formula:
+    //FFT^-1[FFT(x) * ComplexConjugate(FFT(p))]
+    //Imaginary values of this calculation can be ignored (and are)
+    private static double[] calculateCorrelation(double[] responseSignal, double[] paddedPulseSignal) {
+        double[] corr = new double[responseSignal.length];
+
+        ComplexNumber[] X = fastFourierTransform(ComplexNumber.generateFromDoubles(responseSignal), 1);
+        ComplexNumber[] P = fastFourierTransform(ComplexNumber.generateFromDoubles(paddedPulseSignal), 1);
+        ComplexNumber[] PConjugate = new ComplexNumber[P.length];
+        for (int i = 0; i < PConjugate.length; i++) {
+            PConjugate[i] = P[i].conjugate();
+        }
+        ComplexNumber[] XP = ComplexNumber.massMultiply(X, PConjugate);
+        ComplexNumber[] XPInverse = fastFourierTransform(XP, -1);
+
+        for (int i = 0; i < corr.length; i++) {
+            corr[i] = XPInverse[i].getzReal();
+        }
+        return corr;
+    }
+
+    private static int findMaximumCorrelation(double[] correlationValues) {
+        int indexOfMax = -1;
+        double valueOfMax = -99999999.9;
+
+        for (int i = 0; i < correlationValues.length; i++) {
+            double currentValue = correlationValues[i];
+            if (currentValue > valueOfMax) {
+                indexOfMax = i;
+                valueOfMax = currentValue;
+            }
+        }
+        return indexOfMax;
+    }
+
+    //Creates an array of doubles that is 0 up to maxCorrIndex, the values of nonPaddedPulseSignal, followed by 0s to the maximum
+    private static double[] bufferPulseSignal(double[] nonPaddedPulseSignal, int maxCorrIndex, int finalSize) {
+        double[] correctedPulseSignal = new double[finalSize];
+        int transferIndex = 0; //To keep track of where we are in nonPaddedPulseSignal
+        //First, pad the beginning
+        for (int i = 0; i < correctedPulseSignal.length; i++) {
+            if (i >= maxCorrIndex && i < maxCorrIndex + nonPaddedPulseSignal.length) {
+                //add original values
+                correctedPulseSignal[i] = nonPaddedPulseSignal[transferIndex];
+                transferIndex++;
+            } else {
+                correctedPulseSignal[i] = 0.0;
+            }
+        }
+        return correctedPulseSignal;
+    }
+
+    private static void outputRealsToFile(double[] reals, String filepath) {
+        SignalsDataGenerator writer = new SignalsDataGenerator(filepath);
+        writer.clearFile();
+        for (double real : reals) {
+            writer.writeResult(Double.toString(real));
+        }
+        writer.closeFile();
+    }
+
+    private static void print6AResults(int maxCorrIndex) {
+        final int VELOCITY_IN_SEA_WATER = 1500;
+        final double DT = 1.0 / 50000.0;
+        final double TWO_MILLISECONDS = 0.002;
+
+        double answer = (maxCorrIndex / 2.0 * DT + TWO_MILLISECONDS) * VELOCITY_IN_SEA_WATER;
+
+        System.out.printf("Conclusion to 6A:\nThe signal took %d intervals to return.\nWith a %f delay, " +
+                "and an interval of %f, this results in:\n" +
+                "%.3f meters away\n", maxCorrIndex, TWO_MILLISECONDS, DT, answer);
+    }
+
+    
 }
