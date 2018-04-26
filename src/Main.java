@@ -867,7 +867,7 @@ public class Main {
 
     private static void doQuestionSix() {
         do6A(); //6A: Correlation
-//        do6B(); //6B: Convolution
+        do6B(); //6B: Convolution
     }
 
     private static void do6A() {
@@ -996,5 +996,43 @@ public class Main {
                 "%.3f meters away\n", maxCorrIndex, TWO_MILLISECONDS, DT, answer);
     }
 
-    
+    private static void do6B(){
+        double[] returnedSignal = parseResponseSignal("data/question6/response_samples.txt");
+        double[] smoothedSignal = calculateConvolution(returnedSignal);
+        outputRealsToFile(smoothedSignal, "data/question6/smoothed_response_signal.txt");
+    }
+
+    //Formula: FFT^-1[FFT(pulse)*FFT(input)]
+    private static double[] calculateConvolution(double[] returnedSignal){
+        double[] pulse = generateNPointPulse(6, returnedSignal.length);
+        ComplexNumber[] returnedSignalComplex = ComplexNumber.generateFromDoubles(returnedSignal);
+        ComplexNumber[] pulseComplex = ComplexNumber.generateFromDoubles(pulse);
+        ComplexNumber[] returned_signal_fft = fastFourierTransform(returnedSignalComplex, 1);
+        ComplexNumber[] pulse_fft = fastFourierTransform(pulseComplex, 1);
+
+        ComplexNumber[] multiplied = ComplexNumber.massMultiply(pulse_fft, returned_signal_fft);
+
+        ComplexNumber[] convolutionComplex = fastFourierTransform(multiplied, -1);
+
+        double[] convolution_reals = new double[convolutionComplex.length];
+        for(int i = 0; i < convolution_reals.length; i++){
+            convolution_reals[i] = convolutionComplex[i].getzReal();
+        }
+        return convolution_reals;
+    }
+
+    private static double[] generateNPointPulse(int numPoints, int pulseSize){
+        double[] pulse = new double[pulseSize];
+
+        for(int i = 0; i < pulseSize; i++){
+            if(i < numPoints){
+                pulse[i] = 1.0/numPoints;
+            } else{
+                pulse[i] = 0.0;
+            }
+        }
+        return pulse;
+    }
+
+
 }
