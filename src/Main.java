@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,7 +17,8 @@ public class Main {
 //        doQuestionThree(); //Question 3: Affect of phase on PSD
 //        doQuestionFour(); //Question 4: Filtering
 //        doQuestionFive(); //Question 5: DTMF Tones
-        doQuestionSix(); //Question 6: Correlation and Convolution
+//        doQuestionSix(); //Question 6: Correlation and Convolution
+        doQuestionSeven(); //Question 7: Two-Dimensional FFT
     }
 
     public static void testFFT() {
@@ -37,7 +39,7 @@ public class Main {
     public static void testTwoDFFT() {
         System.out.println("Testing 2D FFT...");
         ComplexNumber[][] data = generateTest2DData();
-        ComplexNumber[][] results = twoDFFT(data);
+        ComplexNumber[][] results = twoDFFT(data, 1);
         System.out.println("\nReals\n");
         printTwoDArray(results);
     }
@@ -320,14 +322,14 @@ public class Main {
         return inputs;
     }
 
-    public static ComplexNumber[][] twoDFFT(ComplexNumber[][] userInputs) {
+    public static ComplexNumber[][] twoDFFT(ComplexNumber[][] userInputs, int d) {
         //Copy array
         ComplexNumber[][] inputs = new ComplexNumber[userInputs.length][userInputs[0].length];
         for (int i = 0; i < inputs.length; i++) {
             System.arraycopy(userInputs[i], 0, inputs[i], 0, inputs[i].length);
         }
 
-        final int STANDARD_FFT = 1;
+        int STANDARD_FFT = d;
         ComplexNumber[][] temp = new ComplexNumber[inputs.length][inputs[0].length];
         ComplexNumber finalResult[][] = new ComplexNumber[inputs.length][inputs[0].length];
         for (int k = 0; k < inputs.length; k++) {
@@ -338,8 +340,8 @@ public class Main {
             temp[k] = rowResult;
         }
 
-        System.out.println("First pass:");
-        printTwoDArray(temp);
+//        System.out.println("First pass:");
+//        printTwoDArray(temp);
         //Do Columns
         for (int n = 0; n < inputs[0].length; n++) {
             ComplexNumber[] column = new ComplexNumber[inputs.length];
@@ -347,15 +349,7 @@ public class Main {
                 //add values to form the column
                 column[i] = temp[i][n];
             }
-            System.out.format("\nColumn: ");
-            for (int x = 0; x < column.length; x++) {
-                System.out.format("%.2f ", column[x].getzReal());
-            }
             ComplexNumber[] columnResult = fastFourierTransform(column, STANDARD_FFT);
-            System.out.format("\nColumnFFT: ");
-            for (int x = 0; x < columnResult.length; x++) {
-                System.out.format("%.2f ", columnResult[x].getzReal());
-            }
             //Store as column in final result
             for (int i = 0; i < column.length; i++) {
                 //add values to form the column
@@ -1034,5 +1028,313 @@ public class Main {
         return pulse;
     }
 
+    private static void doQuestionSeven(){
+        Picture returnSignal = setupReturnPicture();
+        Picture pulseSignal = setupPulsePicture();
 
+        returnSignal.save(new File("data/question7/returnSignal.jpg"));
+        pulseSignal.save(new File("data/question7/pulseSignal.jpg"));
+
+        double[][] correlation = do2dCorrelation(returnSignal, pulseSignal);
+        double[][] scaledCorrelation = scaleCorrelation(correlation);
+
+        output2dRealsToFile(correlation, "data/question7/correlation.txt");
+        output2dRealsToFile(scaledCorrelation, "data/question7/scaled_correlation.txt");
+
+        Picture correlationPicture = outputCorrelationPicture(scaledCorrelation);
+        correlationPicture.save(new File("data/question7/corrPicture.jpg"));
+
+        double[][] magnitudes = correlationMagnitude(correlationPicture);
+        Picture magnitudePicture = outputMagnitudePicture(magnitudes);
+        magnitudePicture.save(new File("data/question7/correlation_magnitude.jpg"));
+    }
+
+    private static Picture setupReturnPicture(){
+        return setupPicture(180, 220, 110, 140, 30, 90);
+    }
+
+    private static Picture setupPulsePicture(){
+        return setupPicture(0, 0, 30, 120, 15, 90);
+    }
+
+    private static Picture setupPicture(int whiteXStart, int whiteYStart, int whiteWidth, int whiteHeight, int blackWidth, int blackHeight){
+        Picture picture = new Picture(512, 512);
+        setToBlack(picture);
+        createBigRectangle(picture, whiteXStart, whiteYStart, whiteWidth, whiteHeight);
+        int fullWidth = whiteXStart+whiteWidth;
+        int top_c_bar_end = whiteYStart + ((whiteHeight - blackHeight) / 2);
+        int bottom_c_bar_start = whiteYStart + whiteHeight - ((whiteHeight-blackHeight)/2);
+        blackoutRectanglePortion(picture, fullWidth, top_c_bar_end, bottom_c_bar_start, blackWidth);
+
+        return picture;
+    }
+
+    private static void setToBlack(Picture picture){
+        for(int i = 0; i < picture.width(); i++){
+            for(int j = 0; j < picture.height(); j++){
+                picture.set(i, j, Color.BLACK);
+            }
+        }
+    }
+
+    private static void createBigRectangle(Picture picture, int xStart, int yStart, int width, int height){
+        for(int i = 0; i < picture.height(); i++){
+            for(int j = 0; j < picture.width(); j++){
+                if(i >= xStart && i < xStart+width){
+                    if(j >= yStart && j < yStart+height){
+                        picture.set(i, j, Color.WHITE);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void blackoutRectanglePortion(Picture picture, int fullWidth, int topCBarEnd, int bottomCBarStart, int blackWidth){
+        for(int i = 0; i < picture.width(); i++){
+            for(int j = 0; j < picture.height(); j++){
+                if(i >= fullWidth - blackWidth && i < fullWidth){
+                    if(j >= topCBarEnd && j < bottomCBarStart){
+                        picture.set(i, j, Color.BLACK);
+                    }
+                }
+            }
+        }
+    }
+
+    private static double[][] do2dCorrelation(Picture returnSignal, Picture pulseSignal){
+        Color[][] returnColorArray = returnSignal.getColorArray();
+        Color[][] pulseColorArray = pulseSignal.getColorArray();
+
+        ComplexNumber[][] returnSignalComplex = colorToComplex(returnColorArray);
+        ComplexNumber[][] pulseSignalComplex = colorToComplex(pulseColorArray);
+
+        ComplexNumber[][] return_fft = twoDFFT(returnSignalComplex, 1);
+        ComplexNumber[][] pulse_fft = twoDFFT(pulseSignalComplex, 1);
+        ComplexNumber[][] pulse_fft_conjugate = new ComplexNumber[pulse_fft.length][pulse_fft[0].length];
+        for(int i = 0; i < pulse_fft_conjugate.length; i++){
+            for(int j = 0; j < pulse_fft_conjugate[0].length; j++){
+                pulse_fft_conjugate[i][j] = pulse_fft[i][j].conjugate();
+            }
+        }
+
+        ComplexNumber[][] XP = new ComplexNumber[return_fft.length][return_fft[0].length];
+        for(int i = 0; i < pulse_fft_conjugate.length; i++){
+            for(int j = 0; j < pulse_fft_conjugate[0].length; j++){
+                XP[i][j] = return_fft[i][j].multiply(pulse_fft_conjugate[i][j]);
+            }
+        }
+
+        ComplexNumber[][] corrComplex = twoDFFT(XP, -1);
+
+        double[][] corrDoubles = new double[corrComplex.length][corrComplex[0].length];
+        for(int i = 0; i < corrComplex.length; i++){
+            for(int j = 0; j < corrComplex[0].length; j++){
+                corrDoubles[i][j] = corrComplex[i][j].getzReal();
+            }
+        }
+
+        return corrDoubles;
+    }
+
+    private static ComplexNumber[][] colorToComplex(Color[][] colorArray){
+        ComplexNumber[][] results = new ComplexNumber[colorArray.length][colorArray[0].length];
+        for(int i = 0; i < results.length; i++){
+            for(int j = 0; j < results[0].length; j++){
+                results[i][j] = new ComplexNumber(colorArray[i][j].getRed(), 0);
+            }
+        }
+        return results;
+    }
+
+    private static double[][] scaleCorrelation(double[][] corr){
+        double min = find2dMin(corr);
+        min = Math.abs(min);
+        double[][] translated_corr = new double[corr.length][corr[0].length];
+        for(int i = 0; i < translated_corr.length; i++){
+            for(int j = 0; j < translated_corr[0].length; j++){
+                translated_corr[i][j] = corr[i][j] + min + 1;
+            }
+        }
+
+        double[][] log_scaled = new double[translated_corr.length][translated_corr[0].length];
+
+        for(int i = 0; i < log_scaled.length; i++){
+            for(int j = 0; j < log_scaled[0].length; j++){
+                log_scaled[i][j] = Math.log(translated_corr[i][j]);
+            }
+        }
+        double max = find2dMax(log_scaled);
+        min = findNonZeroMin(log_scaled);
+        System.out.println("min: "+min);
+        System.out.println("max: "+max);
+
+        double[][] translated_to_zero = translateToZero(log_scaled, min);
+        max = find2dMax(translated_to_zero);
+        min = find2dMin(translated_to_zero);
+        System.out.println("min after translation: "+min);
+        System.out.println("max after translation: "+max);
+
+        double linearFactor = 255.0 / max;
+        System.out.println("Linear Factor: "+ linearFactor);
+
+
+        double[][] results = new double[translated_to_zero.length][translated_to_zero[0].length];
+        for(int i = 0; i < results.length; i++){
+            for(int j = 0; j < results[0].length; j++){
+                results[i][j] = translated_to_zero[i][j] * linearFactor;
+            }
+        }
+
+        return results;
+    }
+
+    private static double find2dMin(double[][] inputs){
+        double lowestValue = 9999999;
+
+        for(int i = 0; i < inputs.length; i++){
+            for(int j = 0; j < inputs[0].length; j++){
+                if(inputs[i][j] < lowestValue){
+                    lowestValue = inputs[i][j];
+                }
+            }
+        }
+        return lowestValue;
+    }
+
+    private static double find2dMax(double[][] inputs){
+        double highestValue = -1;
+
+        for(int i = 0; i < inputs.length; i++){
+            for(int j = 0; j < inputs[0].length; j++){
+                if(inputs[i][j] > highestValue){
+                    highestValue = inputs[i][j];
+                }
+            }
+        }
+        return highestValue;
+    }
+
+    private static void output2dRealsToFile(double[][] reals, String filepath){
+        SignalsDataGenerator writer = new SignalsDataGenerator(filepath);
+        writer.clearFile();
+        for(int i = 0; i < reals.length; i++){
+            for(int j = 0; j < reals[0].length; j++){
+                writer.writeResult(Double.toString(reals[i][j]));
+            }
+        }
+        writer.closeFile();
+    }
+
+    private static Picture outputCorrelationPicture(double[][] pixelValues){
+        Picture picture = new Picture(512, 512);
+
+        for(int i = 0; i < picture.width(); i++){
+            for(int j = 0; j < picture.height(); j++){
+                int rgb = (int) Math.floor(pixelValues[i][j]);
+                if(rgb < 0){
+                    rgb = 0;
+                }
+                Color color = new Color(rgb, rgb, rgb);
+                picture.set(j, i, color);
+            }
+        }
+
+        return picture;
+    }
+
+    private static double[][] correlationMagnitude(Picture picture){
+        Color[][] inputs = picture.getColorArray();
+        ComplexNumber[][] complexes = colorToComplex(inputs);
+        return calculateMagnitudes(complexes);
+    }
+
+    private static double[][] calculateMagnitudes(ComplexNumber[][] inputs){
+        double[][] results = new double[inputs.length][inputs[0].length];
+        for(int i = 0; i < results.length; i++){
+            for(int j = 0; j < results[0].length; j++){
+                results[i][j] = inputs[i][j].getModulus();
+            }
+        }
+
+        return results;
+    }
+
+    private static Picture outputMagnitudePicture(double[][] pixelValues){
+        double[][] scaled = scaleCorrelation(pixelValues);
+        double[][] scaled_with_red = addRed(scaled);
+
+        Picture picture = new Picture(512, 512);
+
+        for(int i = 0; i < picture.width(); i++){
+            for(int j = 0; j < picture.height(); j++){
+                int red = (int) Math.floor(scaled_with_red[i][j]);
+                int green;
+                int blue;
+                if(red < 0){
+                    red = 0;
+                    green = 0;
+                    blue = 0;
+                } else if(red == 999.0){
+                    red = 255;
+                    green = 0;
+                    blue = 0;
+                }
+                else{
+                    green = red;
+                    blue = red;
+                }
+                Color color = new Color(red, green, blue);
+                picture.set(j, i, color);
+            }
+        }
+
+        return picture;
+    }
+
+    private static double[][] addRed(double[][] pixelValues){
+        double[][] results = new double[pixelValues.length][pixelValues[0].length];
+        double max = find2dMax(pixelValues);
+        for(int i = 0; i < pixelValues.length; i++){
+            for(int j = 0; j < pixelValues[0].length; j++){
+                if(pixelValues[i][j] >= (max * .9)){
+                    results[i][j] = 999.0; //Marker for red
+                } else {
+                    results[i][j] = pixelValues[i][j];
+                }
+            }
+        }
+        return results;
+    }
+
+    private static double findNonZeroMin(double[][] inputs){
+        double lowestValue = 9999999;
+
+        for(int i = 0; i < inputs.length; i++){
+            for(int j = 0; j < inputs[0].length; j++){
+                if(inputs[i][j] < lowestValue){
+                    if(inputs[i][j] < -.00001 || inputs[i][j] > 0.00001) { //check for non-zero
+                        lowestValue = inputs[i][j];
+                    }
+                }
+            }
+        }
+        return lowestValue;
+    }
+
+    private static double[][] translateToZero(double[][] inputs, double min){
+        double[][] results = new double[inputs.length][inputs[0].length];
+        for(int i = 0; i < results.length; i++){
+            for(int j = 0; j < results[0].length; j++){
+                double currentInput = inputs[i][j];
+                if(currentInput > .00001 || currentInput < -.00001){
+                    //Is NOT zero
+                    results[i][j] = currentInput - min;
+                } else{
+                    //is zero
+                    results[i][j] = 0.0;
+                }
+            }
+        }
+        return results;
+    }
 }

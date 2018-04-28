@@ -64,6 +64,9 @@ public class ComplexNumber {
 
     private void updateArgument() {
         double argument = Math.toDegrees(Math.atan(this.getzImaginary() / this.getzReal()));
+        if(this.getzReal() == 0.0 && this.getzImaginary() == 0.0){
+            argument = 0.0;
+        }
         if(this.getzImaginary() < 0){
             argument *= -1;
         }
